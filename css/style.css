@@ -1,0 +1,20 @@
+/* ======================================= */
+/* 1. MASTER STYLESHEET (IMPORT KAREIN)     */
+/* ======================================= */
+
+/* 1. Global styles ko import karein */
+@import url('global.css');
+
+/* 2. Layout styles ko import karein */
+@import url('layout.css');
+
+/* 3. Reusable components ko import karein */
+@import url('components.css');
+
+/* 4. Page-specific styles ko import karein */
+@import url('pages/dashboard.css');
+@import url('pages/pos.css');
+@import url('pages/cash-register.css');
+@import url('pages/orders.css');
+@import url('pages/schedule.css');
+/* ...jab aap naye pages ke liye CSS banayein, unhe yahaan add karein... */
