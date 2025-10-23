@@ -2,7 +2,7 @@ console.log("START: main.js file chal rahi hai!");
 
 // ... aapka baaki ka import aur doosra code ...
 // --- Step 1: Auth Modules Import Karein ---
-// import { setupAuthGuard, setupLogoutButton } from './js/auth.js';
+ import { setupAuthGuard, setupLogoutButton } from './auth.js';
 
 // --- Step 2: Sabhi Page Modules ko Import Karein ---
 // (Yeh files aap next steps mein banayenge)
