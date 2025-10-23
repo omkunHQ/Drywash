@@ -1,9 +1,9 @@
 /* ======================================= */
-/* 2. LAYOUT (SIDEBAR & MAIN)              */
+/* 2. LAYOUT (SIDEBAR & MAIN)              */
 /* ======================================= */
 .sidebar {
     width: 240px;
-    background-color: var(--sidebar-bg);
+    background-color: var(--sidebar-bg); /* सफेद */
     color: var(--text-light);
     height: 100vh;
     position: fixed;
@@ -13,17 +13,18 @@
     flex-direction: column;
     z-index: 1001;
     transition: transform 0.3s ease;
-    border-right: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color); /* नई बॉर्डर */
 }
 .sidebar-header {
     padding: 20px;
     display: flex;
     align-items: center;
     gap: 10px;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color); /* बॉर्डर का रंग बदला */
 }
 .sidebar-header i { font-size: 1.8rem; color: var(--primary-orange); }
-.sidebar-header h2 { font-size: 1.2rem; color: var(--text-dark); }
+.sidebar-header h2 { font-size: 1.2rem; color: var(--text-dark); } /* डार्क टेक्स्ट */
+
 .sidebar-nav {
     flex-grow: 1;
     list-style: none;
@@ -35,11 +36,11 @@
     gap: 12px;
     padding: 12px 15px;
     text-decoration: none;
-    color: var(--text-light);
+    color: var(--text-light); /* हल्का टेक्स्ट */
     border-radius: 6px;
     margin-bottom: 5px;
     font-weight: 500;
-    border-left: 4px solid transparent;
+    border-left: 4px solid transparent; /* एक्टिव के लिए जगह */
 }
 .sidebar-nav li a:hover {
     background-color: var(--primary-red-light);
@@ -50,23 +51,27 @@
     color: var(--primary-orange);
     font-weight: 600;
     border-left: 4px solid var(--primary-orange);
-    padding-left: 11px;
+    padding-left: 11px; /* पैडिंग एडजस्ट */
 }
 .sidebar-nav li a i { width: 20px; text-align: center; }
+
+/* Mobile sidebar visibility */
 .sidebar.open {
     display: flex;
     transform: translateX(0);
 }
+
 .main-container {
     width: 100%;
     transition: margin-left 0.3s ease;
 }
+
 .main-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 1rem 1.5rem;
-    background-color: var(--card-bg);
+    background-color: var(--card-bg); /* सफेद */
     border-bottom: 1px solid var(--border-color);
     position: sticky;
     top: 0;
@@ -79,13 +84,14 @@
 .header-right { display: flex; align-items: center; gap: 1.5rem; }
 .header-right i { font-size: 1.2rem; color: var(--text-light); cursor: pointer; }
 .user-avatar { width: 36px; height: 36px; border-radius: 50%; background-color: #ccc; }
+
 .content-area {
     padding: 1.5rem;
     padding-bottom: 90px; /* For mobile nav */
 }
 
 /* ======================================= */
-/* 3. MOBILE BOTTOM NAV                    */
+/* 3. MOBILE BOTTOM NAV                   */
 /* ======================================= */
 .bottom-nav {
     position: fixed;
@@ -106,11 +112,11 @@
 .fab-new-order { background-color: var(--primary-orange); color: white; width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-top: -30px; border: 4px solid var(--main-bg); cursor: pointer; text-decoration: none; }
 
 /* ======================================= */
-/* 6. DESKTOP MEDIA QUERY (Layout only)    */
+/* 6. DESKTOP MEDIA QUERY (LAYOUT ONLY)    */
 /* ======================================= */
 @media (min-width: 768px) {
     .sidebar {
-        display: flex;
+        display: flex; /* Show sidebar on desktop */
         transform: translateX(0);
     }
     .main-container {
@@ -118,18 +124,18 @@
         width: calc(100% - 240px);
     }
     .main-header .menu-toggle { display: none; }
-    .header-left h1 { display: block; }
-    .search-bar { 
-        display: flex; 
-        align-items: center; 
-        background-color: var(--main-bg); 
-        border-radius: 8px; 
-        padding: 5px 10px; 
-        width: 300px; 
+    .header-left h1 { display: block; } /* हेडर टाइटल दिखाएँ */
+    .search-bar { 
+        display: flex; 
+        align-items: center; 
+        background-color: var(--main-bg); 
+        border-radius: 8px; 
+        padding: 5px 10px; 
+        width: 300px; 
         border: 1px solid var(--border-color);
     }
     .search-bar i { color: var(--text-light); }
     .search-bar input { border: none; background: none; outline: none; padding: 5px 8px; font-size: 0.9rem; }
     .bottom-nav { display: none; }
-    .content-area { padding: 2rem; padding-bottom: 2rem; } /* Padding-bottom ठीक किया */
+    .content-area { padding: 2rem; }
 }
