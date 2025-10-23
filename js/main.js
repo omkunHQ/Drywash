@@ -1,4 +1,4 @@
-// js/main.js
+
 console.log("START: main.js file chal rahi hai!");
 
 // ... aapka baaki ka import aur doosra code ...
