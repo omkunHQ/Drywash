@@ -337,10 +337,10 @@ body {
 /* ============= Start Dasboard================ */
 
 /* यह नया ग्रिड है जो सभी 6 कार्ड्स को रखेगा */
-.stats-grid-new {
+stats-grid-new {
     display: grid;
-    grid-template-columns: 1fr; /* मोबाइल पर 1 कॉलम */
-    gap: 1.5rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
     margin-bottom: 1.5rem;
 }
 
@@ -835,4 +835,5 @@ body {
     font-size: 0.8rem;
     padding: 5px;
 }
+
 /* ============= End Schedule Modal ================ */
