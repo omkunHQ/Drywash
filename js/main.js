@@ -7,7 +7,7 @@ console.log("START: main.js file chal rahi hai!");
 // --- Step 2: Sabhi Page Modules ko Import Karein ---
 // (Yeh files aap next steps mein banayenge)
 import { loadDashboardStats, loadRecentOrders, loadWeeklyChart } from './pages/dashboard.js';
-// import { initPosPage } from './pages/pos.js';
+import { initPosPage } from './pages/pos.js';
 // import { initOrdersPage } from './pages/orders.js';
 // import { initSchedulePage } from './pages/schedule.js';
 // import { initCashRegisterPage } from './pages/cash-register.js';
