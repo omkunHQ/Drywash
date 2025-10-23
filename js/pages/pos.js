@@ -3,7 +3,7 @@
 // Firebase config se zaroori cheezein import karein
 import { 
     db, collection, getDocs, addDoc, serverTimestamp 
-} from '../firebase-config.js';
+} from 'js/firebase-config.js';
 
 // Poora POS logic is ek function mein daal dein
 export function initPosPage() {
@@ -267,4 +267,5 @@ export function initPosPage() {
     
     // --- Init Function Call ---
     loadProductsAndCategories();
+
 }
