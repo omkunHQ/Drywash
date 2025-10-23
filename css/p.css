@@ -1,0 +1,5 @@
+.stats-grid-new {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    border: 10px solid blue;
+}
