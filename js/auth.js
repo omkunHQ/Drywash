@@ -1,5 +1,4 @@
-// js/auth.js
-
+//* js/auth.js *//
 // --- Step 1: Firebase Config se Zaroori Cheezein Import Karein ---
 import { auth, onAuthStateChanged, signOut } from './firebase-config.js';
 
@@ -38,4 +37,5 @@ export function setupLogoutButton() {
             }
         });
     }
+
 }
