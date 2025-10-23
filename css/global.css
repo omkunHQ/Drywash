@@ -1,0 +1,51 @@
+/* ======================================= */
+/* 1. GLOBAL VARIABLES & RESET             */
+/* ======================================= */
+:root {
+    /* ब्रांड के मुख्य रंग */
+    --primary-red: #F1416C;
+    --primary-red-light: #FFF5F8;
+    --primary-orange: #FFA500;       /* नारंगी */
+    --primary-orange-light: #FFF3E0;
+
+    /* लेआउट के रंग */
+    --sidebar-bg: #ffffff;
+    --main-bg: #F5F8FA;
+    --card-bg: #ffffff;
+    
+    /* टेक्स्ट के रंग */
+    --text-dark: #181C32;
+    --text-light: #A1A5B7;
+    --border-color: #EFF2F5;
+
+    /* == नए रंग == */
+    --warning-yellow: #FFB822;
+    --warning-yellow-light: #FFF9E5;
+    --info-blue: #3699FF;
+    --info-blue-light: #E1F0FF;
+    --primary-purple: #8950FC;
+    --primary-purple-light: #F3F0FF;
+    --success-green: #50CD89;
+    --success-green-light: #E8FFF3;
+    --secondary-pink: #E11A8B;
+    --secondary-pink-light: #FFF5FA;
+
+    /* स्टेटस के रंग */
+    --status-pending-bg: #F5F8FA;
+    --status-pending-text: #A1A5B7;
+    --status-active-bg: #E8FFF3;
+    --status-active-text: #50CD89;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: var(--main-bg);
+    color: var(--text-dark);
+    display: flex;
+}
