@@ -1,5 +1,5 @@
 /* ======================================= */
-/* 4. REUSABLE COMPONENTS                  */
+/* 4. REUSABLE COMPONENTS                  */
 /* ======================================= */
 /* Page Header */
 .page-header {
@@ -45,7 +45,7 @@
     text-decoration: none;
 }
 .btn-primary {
-    background-color: var(--primary-orange);
+    background-color: var(--primary-orange); /* लाल */
     color: white;
 }
 .btn-secondary {
@@ -60,8 +60,10 @@
     border: 1px solid var(--border-color);
     border-radius: 12px;
     overflow-x: auto;
-    width: 100%; 
+    width: 100%; 
 }
+
+/* नया टेबल हेडर */
 .table-header {
     display: flex;
     justify-content: space-between;
@@ -77,6 +79,7 @@
     color: var(--text-light);
     cursor: pointer;
 }
+
 .data-table {
     width: 100%;
     border-collapse: collapse;
@@ -91,26 +94,28 @@
 .data-table td { color: var(--text-dark); }
 .data-table tr:last-child td { border-bottom: none; }
 
-/* Status Badges */
+/* नए स्टेटस बैज */
 .status-badge {
     padding: 6px 12px;
     border-radius: 6px;
     font-size: 0.8rem;
     font-weight: 600;
-  T text-transform: uppercase;
+    text-transform: uppercase;
 }
 .status-badge.pending {
     background-color: var(--status-pending-bg);
     color: var(--status-pending-text);
 }
-.status-badge.active {
+.status-badge.active { /* 'ready' को 'active' से बदल दिया */
     background-color: var(--status-active-bg);
     color: var(--status-active-text);
 }
+/* आप 'processing' के लिए भी स्टाइल जोड़ सकते हैं */
 .status-badge.processing {
     background-color: var(--info-blue-light);
     color: var(--info-blue);
 }
+
 
 /* Modal */
 .modal {
@@ -125,7 +130,7 @@
     background-color: rgba(0,0,0,0.4);
 }
 .modal-content {
-    background-color: var(--main-bg);
+    background-color: var(--main-bg); /* हल्का ग्रे */
     margin: 10% auto;
     padding: 20px;
     border-radius: 8px;
@@ -142,8 +147,6 @@
 }
 .modal-header h2 { font-size: 1.2rem; }
 .modal-header .close-btn { font-size: 1.5rem; cursor: pointer; color: var(--text-light); }
-
-/* Forms */
 .form-group { margin-bottom: 15px; }
 .form-group label {
     display: block;
@@ -151,7 +154,8 @@
     font-weight: 500;
     font-size: 0.9rem;
 }
-.form-group input {
+.form-group input, 
+.form-group select { /* Select ke liye bhi style add kiya */
     width: 100%;
     padding: 10px;
     border: 1px solid var(--border-color);
