@@ -1,304 +1,1640 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Laundry Software</title>
-    
-        <link rel="stylesheet" href="csss.css">
-    
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js'></script>
-</head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Laundry Software</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js'></script>
+<style>
+/* ======================================= */
+/* 1. GLOBAL VARIABLES & RESET             */
+/* ======================================= */
+:root {
+    /* ब्रांड के मुख्य रंग */
+    --primary-red: #F1416C;
+    --primary-red-light: #FFF5F8;
+    --primary-orange: #FFA500;       /* नारंगी */
+    --primary-orange-light: #FFF3E0;
+
+    /* लेआउट के रंग */
+    --sidebar-bg: #ffffff;
+    --main-bg: #F5F8FA;
+    --card-bg: #ffffff;
+    
+    /* टेक्स्ट के रंग */
+    --text-dark: #181C32;
+    --text-light: #A1A5B7;
+    --border-color: #EFF2F5;
+
+    /* == यहाँ आपकी गड़बड़ी थी == */
+    /* == यह नए रंग हैं == */
+    --warning-yellow: #FFB822;
+    --warning-yellow-light: #FFF9E5;
+    --info-blue: #3699FF;
+    --info-blue-light: #E1F0FF;
+    --primary-purple: #8950FC;
+    --primary-purple-light: #F3F0FF;
+    --success-green: #50CD89;
+    --success-green-light: #E8FFF3;
+    --secondary-pink: #E11A8B;
+    --secondary-pink-light: #FFF5FA;
+    /* == नए रंग यहाँ खत्म होते हैं == */
+
+    /* स्टेटस के रंग */
+    --status-pending-bg: #F5F8FA;
+    --status-pending-text: #A1A5B7;
+    --status-active-bg: #E8FFF3;
+    --status-active-text: #50CD89;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: var(--main-bg); /* नया बैकग्राउंड */
+    color: var(--text-dark); /* नया टेक्स्ट रंग */
+    display: flex;
+}
+
+/* ======================================= */
+/* 2. LAYOUT (SIDEBAR & MAIN)              */
+/* ======================================= */
+.sidebar {
+    width: 240px;
+    background-color: var(--sidebar-bg); /* सफेद */
+    color: var(--text-light);
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    display: none; /* Mobile-first: hidden */
+    flex-direction: column;
+    z-index: 1001;
+    transition: transform 0.3s ease;
+    border-right: 1px solid var(--border-color); /* नई बॉर्डर */
+}
+.sidebar-header {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid var(--border-color); /* बॉर्डर का रंग बदला */
+}
+.sidebar-header i { font-size: 1.8rem; color: var(--primary-orange); }
+.sidebar-header h2 { font-size: 1.2rem; color: var(--text-dark); } /* डार्क टेक्स्ट */
+
+.sidebar-nav {
+    flex-grow: 1;
+    list-style: none;
+    padding: 20px 10px;
+}
+.sidebar-nav li a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    text-decoration: none;
+    color: var(--text-light); /* हल्का टेक्स्ट */
+    border-radius: 6px;
+    margin-bottom: 5px;
+    font-weight: 500;
+    border-left: 4px solid transparent; /* एक्टिव के लिए जगह */
+}
+.sidebar-nav li a:hover {
+    background-color: var(--primary-red-light);
+    color: var(--primary-orange);
+}
+.sidebar-nav li.active a {
+    background-color: var(--primary-orange-light);
+    color: var(--primary-orange);
+    font-weight: 600;
+    border-left: 4px solid var(--primary-orange);
+    padding-left: 11px; /* पैडिंग एडजस्ट */
+}
+.sidebar-nav li a i { width: 20px; text-align: center; }
+
+/* Mobile sidebar visibility */
+.sidebar.open {
+    display: flex;
+    transform: translateX(0);
+}
+
+.main-container {
+    width: 100%;
+    transition: margin-left 0.3s ease;
+}
+
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background-color: var(--card-bg); /* सफेद */
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+.header-left { display: flex; align-items: center; gap: 1rem; }
+.header-left .menu-toggle { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-dark); }
+.header-left h1 { font-size: 1.25rem; color: var(--text-dark); }
+.search-bar { display: none; }
+.header-right { display: flex; align-items: center; gap: 1.5rem; }
+.header-right i { font-size: 1.2rem; color: var(--text-light); cursor: pointer; }
+.user-avatar { width: 36px; height: 36px; border-radius: 50%; background-color: #ccc; }
+
+.content-area {
+    padding: 1.5rem;
+    padding-bottom: 90px; /* For mobile nav */
+}
+
+/* ======================================= */
+/* 3. MOBILE BOTTOM NAV                    */
+/* ======================================= */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 70px;
+    background-color: var(--card-bg);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 1000;
+}
+.nav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: var(--text-light); font-size: 0.75rem; }
+.nav-item i { font-size: 1.25rem; }
+.nav-item.active { color: var(--primary-orange); }
+.fab-new-order { background-color: var(--primary-orange); color: white; width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-top: -30px; border: 4px solid var(--main-bg); cursor: pointer; text-decoration: none; }
+
+/* ======================================= */
+/* 4. REUSABLE COMPONENTS                  */
+/* ======================================= */
+/* Page Header */
+.page-header {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--text-dark);
+}
+.page-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+.page-actions .search-box {
+    display: flex;
+    align-items: center;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0 10px;
+}
+.page-actions .search-box i { color: var(--text-light); }
+.page-actions .search-box input {
+    border: none;
+    outline: none;
+    padding: 10px;
+    font-size: 0.9rem;
+    background: none;
+}
+
+/* Buttons */
+.btn {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+}
+.btn-primary {
+    background-color: var(--primary-orange); /* लाल */
+    color: white;
+}
+.btn-secondary {
+    background-color: var(--card-bg);
+    color: var(--text-dark);
+    border: 1px solid var(--border-color);
+}
+
+/* Table */
+.table-container {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow-x: auto;
+    width: 100%; 
+}
+
+/* नया टेबल हेडर */
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+.table-header h2 {
+    font-size: 1.1rem;
+    color: var(--text-dark);
+}
+.table-header i {
+    color: var(--text-light);
+    cursor: pointer;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.data-table th, .data-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.9rem;
+}
+.data-table th { color: var(--text-light); font-weight: 600; }
+.data-table td { color: var(--text-dark); }
+.data-table tr:last-child td { border-bottom: none; }
+
+/* नए स्टेटस बैज */
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+.status-badge.pending {
+    background-color: var(--status-pending-bg);
+    color: var(--status-pending-text);
+}
+.status-badge.active { /* 'ready' को 'active' से बदल दिया */
+    background-color: var(--status-active-bg);
+    color: var(--status-active-text);
+}
+/* आप 'processing' के लिए भी स्टाइल जोड़ सकते हैं */
+.status-badge.processing {
+    background-color: var(--info-blue-light);
+    color: var(--info-blue);
+}
+
+
+/* Modal */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1002;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+.modal-content {
+    background-color: var(--main-bg); /* हल्का ग्रे */
+    margin: 10% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+}
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+.modal-header h2 { font-size: 1.2rem; }
+.modal-header .close-btn { font-size: 1.5rem; cursor: pointer; color: var(--text-light); }
+.form-group { margin-bottom: 15px; }
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    background: var(--card-bg);
+}
+
+/* ======================================= */
+/* 5. PAGE-SPECIFIC STYLES                 */
+/* ======================================= */
+
+/* ============= Start Dasboard================ */
+
+/* यह नया ग्रिड है जो सभी 6 कार्ड्स को रखेगा */
+.stats-grid-new {
+    display: grid;
+    grid-template-columns: 1fr; /* मोबाइल पर 1 कॉलम */
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* यह नए रंगीन कार्ड का स्टाइल है */
+.stat-card-new {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    background: var(--card-bg); /* सफेद */
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.01);
+}
+
+/* यह आइकन के रंगीन गोले का स्टाइल है */
+.icon-container {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+/* यह कार्ड के टेक्स्ट का स्टाइल है */
+.stat-info .stat-title {
+    color: var(--text-light); /* हल्का ग्रे टेक्स्ट */
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.stat-info .stat-number {
+    color: var(--text-dark); /* गहरा (काला) टेक्स्ट */
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+/* यह पुराने काले कार्ड्स को छिपा देगा */
+.stats-grid, .stat-card, .small-stats-grid { 
+    display: none !important; 
+}
+
+.quick-actions-grid { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 1rem; 
+}
+.action-card { 
+    background: var(--card-bg); 
+    border: 1px solid var(--border-color); 
+    border-radius: 12px; 
+    padding: 1.5rem 1rem; 
+    text-align: center; 
+    cursor: pointer; 
+    transition: box-shadow 0.2s; 
+    text-decoration: none;
+    color: var(--text-dark);
+}
+.action-card:hover { box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+.action-card i { font-size: 2rem; color: var(--primary-orange); margin-bottom: 0.75rem; }
+.action-card span { font-size: 0.9rem; font-weight: 500; }
+
+/* यह लाइन ज़रूरी है: डेस्कटॉप कंटेंट को मोबाइल पर छिपाएं */
+.desktop-content { display: none; } 
+/* यह लाइन भी ज़रूरी है: मोबाइल क्विक एक्शन को मोबाइल पर दिखाएं (JS इसे हैंडल करता है, पर यहाँ भी रख सकते हैं) */
+.mobile-only-quick-actions { display: block; } /* या इसे JS पर छोड़ दें */
+
+/* ============= End Dasboard================ */
+
+
+
+/* ============= Start POS ================ */
+.pos-layout { display: flex; flex-direction: column; gap: 1.5rem; }
+.product-filters { display: flex; gap: 10px; margin-bottom: 1rem; overflow-x: auto; padding-bottom: 5px; }
+.filter-btn { background: var(--card-bg); border: 1px solid var(--border-color); padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.9rem; white-space: nowrap; }
+.filter-btn.active { background: var(--primary-orange); color: white; border-color: var(--primary-orange); }
+.product-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+.product-card { padding: 1rem; text-align: center; }
+.product-card i { font-size: 2rem; color: var(--primary-orange); margin-bottom: 0.5rem; }
+.product-card .name { font-weight: 600; font-size: 0.9rem; }
+.product-card .price { font-size: 0.85rem; color: var(--text-light); }
+.pos-cart { width: 100%; }
+.cart-container { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; position: sticky; top: 85px; }
+.cart-header { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color); font-size: 1.1rem; font-weight: 600; }
+.customer-details { padding: 1.5rem; border-bottom: 1px solid var(--border-color); }
+.customer-details input { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.9rem; margin-bottom: 10px; }
+.cart-items-list { padding: 1rem 1.5rem; max-height: 300px; overflow-y: auto; }
+.cart-item { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+.cart-item-details .name { font-weight: 500; }
+.cart-item-details .price { font-size: 0.9rem; color: var(--text-light); }
+.cart-item-qty { display: flex; align-items: center; gap: 8px; }
+.cart-item-qty button { background: var(--main-bg); border: 1px solid var(--border-color); width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 1rem; }
+.cart-item-qty .qty-value { font-weight: 500; }
+.cart-item-remove { background: none; border: none; color: var(--primary-orange); font-size: 1.1rem; cursor: pointer; margin-left: 10px; }
+.cart-empty-msg { text-align: center; color: var(--text-light); padding: 2rem 0; }
+.cart-summary { padding: 1.5rem; border-top: 1px solid var(--border-color); }
+.summary-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem; }
+.summary-row span { color: var(--text-light); }
+.summary-row strong { color: var(--text-dark); }
+.summary-row.total { font-size: 1.2rem; font-weight: 600; margin-top: 10px; }
+.charge-btn { display: block; width: 100%; background: var(--primary-orange); color: white; padding: 1rem; border: none; border-radius: 0 0 11px 11px; font-size: 1.1rem; font-weight: 600; cursor: pointer; }
+
+/* Custom Item Form */
+.custom-item-form {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    background-color: #fdfdfe;
+}
+.custom-item-form h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+.form-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+.form-row .form-group {
+    flex: 1;
+    margin-bottom: 0;
+}
+.form-row .form-group.small {
+    flex: 0.5;
+}
+/* ============= End POS ================ */
+
+
+/* ======================================= */
+/* 6. DESKTOP MEDIA QUERY                  */
+/* ======================================= */
+@media (min-width: 768px) {
+    .sidebar {
+        display: flex; /* Show sidebar on desktop */
+        transform: translateX(0);
+    }
+    .main-container {
+        margin-left: 240px;
+        width: calc(100% - 240px);
+    }
+    .main-header .menu-toggle { display: none; }
+    .header-left h1 { display: block; } /* हेडर टाइटल दिखाएँ */
+    .search-bar { 
+        display: flex; 
+        align-items: center; 
+        background-color: var(--main-bg); 
+        border-radius: 8px; 
+        padding: 5px 10px; 
+        width: 300px; 
+        border: 1px solid var(--border-color);
+    }
+    .search-bar i { color: var(--text-light); }
+    .search-bar input { border: none; background: none; outline: none; padding: 5px 8px; font-size: 0.9rem; }
+    .bottom-nav { display: none; }
+    .content-area { padding: 2rem; }
+
+    /* ============= Start Desktop Dasboard Layout Only ================ */
+
+    /* 1. कार्ड्स को 3 कॉलम में करें */
+    #page-dashboard .stats-grid-new { /* सिर्फ डैशबोर्ड पेज पर */
+        grid-template-columns: repeat(3, 1fr); 
+    }
+
+    /* 2. मुख्य रो को फ्लेक्स बनाएं */
+    #page-dashboard .dashboard-main-row {
+        display: flex !important; /* Force display flex */
+        gap: 1.5rem; 
+        align-items: flex-start; 
+        margin-top: 1.5rem; 
+        flex-direction: column;
+    }
+
+    /* 3. बायाँ कॉलम (क्विक एक्शन) */
+    #page-dashboard .quick-actions-column {
+        width: 100%;
+        display: block !important; /* Ensure it's visible */
+    }
+
+    #page-dashboard .quick-actions-column h2 {
+         margin-bottom: 1rem; 
+         font-size: 1.1rem;
+         color: var(--text-dark);
+    }
+    #page-dashboard .quick-actions-grid-vertical {
+        display: grid;
+        gap: 1rem; 
+        grid-template-columns: repeat(3, 1fr); /* <-- YAH ADD KAREIN */
+    }
+     #page-dashboard .quick-actions-grid-vertical .action-card {
+        flex-direction: row;
+        text-align: left;
+        padding: 1rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+     #page-dashboard .quick-actions-grid-vertical .action-card i {
+        margin-bottom: 0;
+        font-size: 1.5rem; 
+        width: 30px; 
+        text-align: center;
+    }
+
+
+    /* 4. दायाँ कॉलम (टेबल + ग्राफ) */
+    #page-dashboard .table-graph-column {
+        flex: 1; /* बची हुई सारी जगह ले लो */
+        display: flex !important; /* Force display flex */
+        flex-direction: column; 
+        gap: 1.5rem; 
+        min-width: 0; 
+    }
+
+    /* 5. टेबल कंटेनर */
+     #page-dashboard .table-container {
+         width: 100%;
+         /* Styles from outside media query apply here */
+     }
+
+    /* 6. डेटा टेबल */
+     #page-dashboard .data-table {
+         width: 100%;
+         /* Styles from outside media query apply here */
+     }
+
+    /* 7. ग्राफ कंटेनर */
+    #page-dashboard .chart-container {
+        width: 100%; 
+        height: 350px; 
+        position: relative; 
+        padding: 0; 
+        margin: 0;
+        background: var(--card-bg); /* Ensure background is applied */
+         border: 1px solid var(--border-color); /* Ensure border */
+         border-radius: 12px; /* Ensure radius */
+    }
+    /* ग्राफ टाइटल */
+    #page-dashboard .chart-container h2 {
+        padding: 1.5rem 1.5rem 0 1.5rem; 
+        margin-bottom: 1rem; 
+        font-size: 1.1rem;
+        color: var(--text-dark);
+    }
+
+    /* 8. कैनवास (ग्राफ) */
+    #page-dashboard #weeklyChart {
+        display: block; 
+        width: 100% !important; 
+        max-width: 100%;
+        height: auto !important; 
+        box-sizing: border-box; 
+        padding: 0 1rem 1.5rem 1rem; 
+        margin: 0 !important; 
+    }
+
+    /* 9. डेस्कटॉप कंटेंट दिखाएं, मोबाइल छिपाएं */
+     #page-dashboard .desktop-content {
+        display: block !important; 
+    }
+     #page-dashboard .mobile-only-quick-actions {
+         display: none !important;
+     }
+
+    /* ============= End Desktop Dasboard Layout Only ================ */
+
+    /* ============= Start Desktop POS ================ */
+.pos-layout { 
+    flex-direction: row; 
+    align-items: flex-start; 
+    gap: 1.5rem; /* Optional: Dono ke beech space dega */
+}
+
+/* YEH NAYA RULE ADD KAREIN */
+.pos-products {
+    flex: 1;  /* Yeh products ko bachi hui poori jagah dega */
+    min-width: 0; /* Yeh flexbox ko ajeeb tarah se shrink/overflow hone se rokta hai */
+}
+
+.pos-cart { 
+    width: 400px; /* <-- Yahaan apni pasand ki width rakhein (jaise 450px ya 500px) */
+    flex-shrink: 0; /* <-- YEH SABSE ZAROORI HAI: Yeh cart ko sikudne se rokega */
+} 
+.product-grid { 
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); /* <-- minmax(130px, 1fr) ko minmax(90px, 1fr) kiya */
+    gap: 0.75rem; /* Optional: Items ke beech thoda kam space */
+}
+/* ============= End Desktop POS ================ */
+}
+
+/* ============= Start Cash Register ================ */
+.cash-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Mobile par 2 column */
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.cash-summary-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.01);
+}
+
+.cash-summary-card .title {
+    color: var(--text-light);
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.cash-summary-card .amount {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+.cash-summary-card .amount.positive {
+    color: var(--success-green);
+}
+
+.cash-summary-card .amount.negative {
+    color: var(--primary-red);
+}
+
+/* Desktop par 4 column */
+@media (min-width: 768px) {
+    .cash-summary-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+/* ============= End Cash Register ================ */
+
+/* ============= Start Order Details Modal ================ */
+.modal-content.modal-lg {
+    max-width: 700px; /* Bada modal */
+}
+
+.order-details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+.order-details-header h3 {
+    font-size: 1.25rem;
+    color: var(--text-dark);
+}
+/* Order ID */
+.order-details-header h3 span {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-light);
+    margin-left: 8px;
+}
+
+.order-details-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+.order-info-box {
+    background: var(--main-bg);
+    border-radius: 8px;
+    padding: 1rem;
+}
+.order-info-box h4 {
+    font-size: 1rem;
+    color: var(--text-dark);
+    margin-bottom: 0.75rem;
+}
+.order-info-box p {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+}
+.order-info-box p strong {
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+.order-items-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+}
+.order-items-table th, .order-items-table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.9rem;
+}
+.order-items-table th {
+    background-color: var(--main-bg);
+    color: var(--text-light);
+}
+.order-items-table td.item-price {
+    text-align: right;
+    font-weight: 500;
+}
+
+.order-details-summary {
+    width: 50%;
+    margin-left: auto; /* Right align */
+    margin-bottom: 1.5rem;
+}
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+.summary-row.total {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    border-top: 1px solid var(--border-color);
+    padding-top: 8px;
+    margin-top: 8px;
+}
+.summary-row span { color: var(--text-light); }
+.summary-row strong { color: var(--text-dark); }
+
+.order-status-updater {
+    border-top: 1px solid var(--border-color);
+    padding-top: 1.5rem;
+}
+.order-status-updater h4 {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+.status-buttons {
+    display: flex;
+    gap: 10px;
+}
+.status-buttons .btn {
+    flex: 1;
+}
+/* ============= End Order Details Modal ================ */
+
+/* ============= StartSchedule Modal ================ */
+.fc-toolbar-title { font-size: 1.5rem !important; color: var(--text-dark); }
+        .fc-button { 
+            background-color: var(--primary-orange) !important; 
+            border: none !important; 
+            box-shadow: none !important;
+        }
+        .fc-button:focus { box-shadow: none !important; }
+        .fc-daygrid-day-number { color: var(--text-light); }
+        .fc-day-today { background-color: var(--primary-orange-light) !important; }
+        
+        /* ======================================= */
+/* 7. SCHEDULE PAGE MOBILE FIX             */
+/* ======================================= */
+
+/* 1. Page Header ko wrap karne dein */
+#page-schedule .page-header {
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+/* 2. 'Optimize Route' card ko vertical stack karein */
+#page-schedule .page-actions {
+    flex-direction: column;
+    align-items: stretch; /* Dropdown aur Button full-width honge */
+    gap: 1rem;
+}
+
+/* 3. Calendar ke poore header ko vertical stack karein */
+#page-schedule .fc-toolbar.fc-header-toolbar {
+    flex-direction: column; /* Prev/Next, Title, Views ko stack karein */
+    gap: 1.25rem;
+    align-items: center;
+}
+
+/* 4. Calendar ke title ('October 2025') ka size chhota karein */
+#page-schedule .fc-toolbar-title {
+    font-size: 1.25rem !important; 
+}
+
+/* 5. Calendar ke din (Mon, Tue) ke text ko chhota karein */
+#page-schedule .fc-col-header-cell-cushion {
+    font-size: 0.8rem;
+    padding: 5px;
+}
+/* ============= End Schedule Modal ================ */
+</style>
+	</head>
 <body>
+     <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <i class="fa-solid fa-shirt"></i>
+            <h2>Laundry Soft.</h2>
+        </div>
+        <ul class="sidebar-nav" id="sidebar-nav-list">
+            <li class="active"><a href="#dashboard" data-page="page-dashboard"><i class="fa-solid fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="#pos" data-page="page-pos"><i class="fa-solid fa-cash-register"></i> POS</a></li>
+            <li><a href="#orders" data-page="page-orders"><i class="fa-solid fa-box-archive"></i> Orders</a></li>
+            <li><a href="#schedule" data-page="page-schedule"><i class="fa-solid fa-calendar-alt"></i> Schedule</a></li>
+            <li><a href="#cash-register" data-page="page-cash-register"><i class="fa-solid fa-calculator"></i> Cash Register</a></li>
+            <li><a href="#customers" data-page="page-customers"><i class="fa-solid fa-users"></i> Customers</a></li>
+            <li><a href="#reports" data-page="page-reports"><i class="fa-solid fa-chart-bar"></i> Reports</a></li>
+            <li><a href="#inventory" data-page="page-inventory"><i class="fa-solid fa-dolly"></i> Inventory</a></li>
+            <li><a href="#staff" data-page="page-staff"><i class="fa-solid fa-users-gear"></i> Staff</a></li>
+            <li><a href="#settings" data-page="page-settings"><i class="fa-solid fa-cogs"></i> Settings</a></li>
+            <li style="margin-top: 20px;"><a href="#" id="logout-btn" style="color: var(--primary-red);"><i class="fa-solid fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </nav>
 
-        <nav class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <i class="fa-solid fa-shirt"></i>
-            <h2>Laundry Soft.</h2>
-        </div>
-        <ul class="sidebar-nav" id="sidebar-nav-list">
-            <li class="active"><a href="#dashboard" data-page="page-dashboard"><i class="fa-solid fa-tachometer-alt"></i> Dashboard</a></li>
-            <li><a href="#pos" data-page="page-pos"><i class="fa-solid fa-cash-register"></i> POS</a></li>
-            <li><a href="#orders" data-page="page-orders"><i class="fa-solid fa-box-archive"></i> Orders</a></li>
-            <li><a href="#schedule" data-page="page-schedule"><i class="fa-solid fa-calendar-alt"></i> Schedule</a></li>
-            <li><a href="#cash-register" data-page="page-cash-register"><i class="fa-solid fa-calculator"></i> Cash Register</a></li>
-            <li><a href="#customers" data-page="page-customers"><i class="fa-solid fa-users"></i> Customers</a></li>
-            <li><a href="#reports" data-page="page-reports"><i class="fa-solid fa-chart-bar"></i> Reports</a></li>
-            <li><a href="#inventory" data-page="page-inventory"><i class="fa-solid fa-dolly"></i> Inventory</a></li>
-            <li><a href="#staff" data-page="page-staff"><i class="fa-solid fa-users-gear"></i> Staff</a></li>
-            <li><a href="#settings" data-page="page-settings"><i class="fa-solid fa-cogs"></i> Settings</a></li>
-            <li style="margin-top: 20px;"><a href="#" id="logout-btn" style="color: var(--primary-red);"><i class="fa-solid fa-sign-out-alt"></i> Logout</a></li>
-        </ul>
-    </nav>
+    <div class="main-container">
 
-        <div class="main-container">
+        <header class="main-header">
+            <div class="header-left">
+                <button class="menu-toggle" id="menu-toggle-btn">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <h1 id="page-title-header">Dashboard</h1> <div class="search-bar">
+                    <i class="fa-solid fa-search"></i>
+                    <input type="text" placeholder="Search...">
+                </div>
+            </div>
+            <div class="header-right">
+                <i class="fa-regular fa-bell"></i>
+                <div class="user-avatar"></div>
+            </div>
+        </header>
 
-                <header class="main-header">
-            <div class="header-left">
-                <button class="menu-toggle" id="menu-toggle-btn">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
-                <h1 id="page-title-header">Dashboard</h1>
-                <div class="search-bar">
-                    <i class="fa-solid fa-search"></i>
-                    <input type="text" placeholder="Search...">
-                </div>
-            </div>
-            <div class="header-right">
-                <i class="fa-regular fa-bell"></i>
-                <div class="user-avatar"></div>
-            </div>
-        </header>
+        <! =============== PAGE 1: Dasboard Start ==================== !>
+        <main class="content-area page-content" id="page-dashboard">
 
-                        <main class="content-area page-content" id="page-dashboard">
-            
-                        <div class="stats-grid-new">
-                <div class="stat-card-new">
-                    <div class="icon-container" style="background-color: var(--primary-red-light);"><i class="fa-solid fa-list-check" style="color: var(--primary-red);"></i></div>
-                    <div class="stat-info">
-                        <div class="stat-title">Today's Orders</div>
-                        <div class="stat-number" id="stats-today-orders">...</div>
-                    </div>
-                </div>
-                <div class="stat-card-new">
-                    <div class="icon-container" style="background-color: var(--warning-yellow-light);"><i class="fa-solid fa-clock" style="color: var(--warning-yellow);"></i></div>
-                    <div class="stat-info">
-                        <div class="stat-title">Total Pending</div>
-                        <div class="stat-number" id="stats-pending">...</div>
-                    </div>
-                </div>
-                <div class="stat-card-new">
-                    <div class="icon-container" style="background-color: var(--info-blue-light);"><i class="fa-solid fa-truck" style="color: var(--info-blue);"></i></div>
-                    <div class="stat-info">
-                        <div class="stat-title">Total Delivered</div>
-                        <div class="stat-number" id="stats-delivered">...</div>
-                    </div>
-                </div>
-                <div class="stat-card-new">
-                    <div class="icon-container" style="background-color: var(--primary-purple-light);"><i class="fa-solid fa-users" style="color: var(--primary-purple);"></i></div>
-                    <div class="stat-info">
-                        <div class="stat-title">Total Customers</div>
-                        <div class="stat-number" id="stats-customers">...</div>
-                    </div>
-                </div>
-                <div class="stat-card-new">
-                    <div class="icon-container" style="background-color: var(--success-green-light);"><i class="fa-solid fa-wallet" style="color: var(--success-green);"></i></div>
-                    <div class="stat-info">
-                        <div class="stat-title">Unpaid Orders</div>
-                        <div class="stat-number" id="stats-unpaid">...</div>
-                    </div>
-                </div>
-                <div class="stat-card-new">
-                    <div class="icon-container" style="background-color: var(--secondary-pink-light);"><i class="fa-solid fa-map-location-dot" style="color: var(--secondary-pink);"></i></div>
-                    <div class="stat-info">
-                        <div class="stat-title">Total Pickup Req..</div>
-                        <div class="stat-number" id="stats-pickup">...</div>
-                    </div>
-                </div>
-            </div> 
-            
-                        <div class="dashboard-main-row desktop-content">
-                <div class="quick-actions-column">
-                    <h2>Quick Actions</h2>
-                    <div class="quick-actions-grid-vertical">
-                         <a href="#pos" data-page="page-pos" class="action-card quick-action-link">
-                             <i class="fa-solid fa-plus" style="color: var(--info-blue);"></i>
-                             <span>New Order</span>
-                         </a>
-                         <a href="#orders" data-page="page-orders" class="action-card quick-action-link">
-                             <i class="fa-solid fa-boxes-stacked" style="color: var(--primary-purple);"></i>
-                             <span>Manage Orders</span>
-                         </a>
-                         <a href="#pos" data-page="page-pos" class="action-card quick-action-link">
-                             <i class="fa-solid fa-cash-register" style="color: var(--success-green);"></i>
-                             <span>Cash Register</span>
-                         </a>
-                    </div>
-                </div>
+            <div class="stats-grid-new">
+                <div class="stat-card-new">
+                    <div class="icon-container" style="background-color: var(--primary-red-light);">
+                        <i class="fa-solid fa-list-check" style="color: var(--primary-red);"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-title">Today's Orders</div>
+                        <div class="stat-number" id="stats-today-orders">15</div>
+                    </div>
+                </div>
+                <div class="stat-card-new">
+                    <div class="icon-container" style="background-color: var(--warning-yellow-light);">
+                        <i class="fa-solid fa-clock" style="color: var(--warning-yellow);"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-title">Total Pending</div>
+                        <div class="stat-number" id="stats-pending">03</div>
+                    </div>
+                </div>
+                <div class="stat-card-new">
+                    <div class="icon-container" style="background-color: var(--info-blue-light);">
+                        <i class="fa-solid fa-truck" style="color: var(--info-blue);"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-title">Total Delivered</div>
+                        <div class="stat-number" id="stats-delivered">180</div>
+                    </div>
+                </div>
+                <div class="stat-card-new">
+                    <div class="icon-container" style="background-color: var(--primary-purple-light);">
+                        <i class="fa-solid fa-users" style="color: var(--primary-purple);"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-title">Total Customers</div>
+                        <div class="stat-number" id="stats-customers">390</div>
+                    </div>
+                </div>
+                <div class="stat-card-new">
+                    <div class="icon-container" style="background-color: var(--success-green-light);">
+                        <i class="fa-solid fa-wallet" style="color: var(--success-green);"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-title">Unpaid Orders</div>
+                        <div class="stat-number" id="stats-unpaid">0</div>
+                    </div>
+                </div>
+                <div class="stat-card-new">
+                    <div class="icon-container" style="background-color: var(--secondary-pink-light);">
+                        <i class="fa-solid fa-map-location-dot" style="color: var(--secondary-pink);"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-title">Total Pickup Req..</div>
+                        <div class="stat-number" id="stats-pickup">44</div>
+                    </div>
+                </div>
+            </div> <div class="dashboard-main-row desktop-content">
 
-                <div class="table-graph-column">
-                    <div class="table-container">
-                        <div class="table-header">
-                            <h2>Today's Orders</h2>
-                            <i class="fa-solid fa-ellipsis-vertical"></i>
-                        </div>
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Invoice</th>
-                                    <th>Customer Name</th>
-                                    <th>Delivery Date</th>
-                                    <th>Qty</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="orders-table-body">
-                                 <tr><td colspan="5" style="text-align: center;">Loading...</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="chart-container">
-                        <h2>Weekly Order Trends</h2>
-                        <canvas id="weeklyChart"></canvas>
-                    </div>
-                </div>
-            </div> 
-            
-                        <div class="mobile-only-quick-actions">
-                 <h2>Quick Actions</h2>
-                 <div class="quick-actions-grid">
-                     <a href="#pos" data-page="page-pos" class="action-card quick-action-link"><i class="fa-solid fa-shirt" style="color: var(--info-blue);"></i><span>New Order</span></a>
-                     <a href="#orders" data-page="page-orders" class="action-card quick-action-link"><i class="fa-solid fa-boxes-stacked" style="color: var(--primary-purple);"></i><span>Manage Orders</span></a>
-                     <a href="#customers" data-page="page-customers" class="action-card quick-action-link"><i class="fa-solid fa-receipt" style="color: var(--warning-yellow);"></i><span>Customers</span></a>
-                     <a href="#" class="action-card"><i class="fa-solid fa-calendar-check" style="color: var(--success-green);"></i><span>Schedule Pickup</span></a>
-                 </div>
-            </div>
-        </main>
-        
-                <main class="content-area page-content" id="page-pos" style="display:none;">
-                        <div class="pos-layout">
-                <section class="pos-products">
-                    <div class="product-filters" id="product-filters">
-                        <button class="filter-btn active" data-category="all">All</button>
-                    </div>
-                    <div class="product-grid" id="product-grid">
-                        <p>Loading products...</p>
-                    </div>
-                </section>
-                <aside class="pos-cart">
-                    <div class="cart-container">
-                        <div class="cart-header">Order Cart</div>
-                        <div class="customer-details">
-                            <input type="tel" id="customer-phone" placeholder="Customer Phone*">
-                            <input type="text" id="customer-name" placeholder="Customer Name">
-                        </div>
-                        <form class="custom-item-form" id="custom-item-form">
-                            <h3>Add Custom/Weight Item</h3>
-                            <div class="form-row">
-                                <div class="form-group" style="flex: 2;">
-                                    <label for="custom-item-name">Item Name</label>
-                                    <input type="text" id="custom-item-name" placeholder="e.g., Wash & Fold">
-                                </div>
-                                <div class="form-group small">
-                                    <label for="custom-item-qty">Qty/Kg</label>
-                                    <input type="number" id="custom-item-qty" value="1" step="0.1">
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="custom-item-price">Price (per unit/kg)</label>
-                                    <input type="number" id="custom-item-price" placeholder="e.g., 70">
-                                </div>
-                                <button type="submit" class="btn btn-primary" style="align-self: flex-end;">Add</button>
-                            </div>
-                        </form>
-                        <div class="cart-items-list" id="cart-items-list">
-                            <div class="cart-empty-msg">Cart is empty</div>
-                        </div>
-                        <div class="cart-summary">
-                            <div class="summary-row">
-                                <span>Subtotal</span>
-                                <strong id="summary-subtotal">$0.00</strong>
-                            </div>
-                            <div class="summary-row">
-                                <span>Discount</span>
-                                <strong id="summary-discount">$0.00</strong>
-                            </div>
-                            <div class="summary-row" style="align-items: center; padding: 10px 15px; background: var(--warning-yellow-light);">
-                                <label for="is-express-order" style="font-weight: 600; color: var(--text-dark);">Express Order (Urgent)?</label>
-                                <input type="checkbox" id="is-express-order" style="width: 20px; height: 20px; accent-color: var(--primary-orange);">
-                            </div>
-                            <div class="summary-row total">
-                                <span>Total</span>
-                                <strong id="summary-total">$0.00</strong>
-                            </div>
-                        </div>
-                        <button class="charge-btn" id="place-order-btn">
-                            Charge & Place Order
-                        </button>
-                    </div>
-                </aside>
-            </div>
-        </main>
-        
-                <main class="content-area page-content" id="page-orders" style="display:none;">
-                        <h1 class="page-header">Manage Orders</h1>
-            <div class="page-actions">
-                <div class="search-box">
-                    <i class="fa-solid fa-search"></i>
-                    <input type="text" id="order-search" placeholder="Search by Invoice, Name, or Phone...">
-                </div>
-                <a href="#pos" data-page="page-pos" class="btn btn-primary quick-action-link">
-                    <i class="fa-solid fa-plus"></i>
-                    <span>New Order</span>
-                </a>
-            </div>
-            <div class="table-container">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Invoice ID</th>
-                            <th>Customer</th>
-                            <th>Date</th>
-                            <th>Total</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="orders-list-body">
-                        <tr><td colspan="6" style="text-align: center;">Loading orders...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </main>
-        
-                <main class="content-area page-content" id="page-schedule" style="display:none;">
-                    </main>
-        
-                <main class="content-area page-content" id="page-cash-register" style="display:none;">
-                    </main>
-        
-                <main class="content-area page-content" id="page-customers" style="display:none;">
-                    </main>
-        
-            </div>         <nav class="bottom-nav">
-        <a href="#dashboard" class="nav-item active" data-page="page-dashboard">
-            <i class="fa-solid fa-tachometer-alt"></i>
-            <span>Dashboard</span>
-        </a>
-        <a href="#orders" class="nav-item" data-page="page-orders">
-            <i class="fa-solid fa-box-archive"></i>
-            <span>Orders</span>
-        </a>
-        <a href="#pos" class="fab-new-order" data-page="page-pos">
-            <i class="fa-solid fa-plus"></i>
-        </a>
-        <a href="#customers" class="nav-item" data-page="page-customers">
-            <i class="fa-solid fa-users"></i>
-            <span>Customers</span>
-        </a>
-        <a href="#settings" class="nav-item" data-page="page-settings">
-            <i class="fa-solid fa-cogs"></i>
-            <span>Settings</span>
-        </a>
-    </nav>   
+                <div class="quick-actions-column">
+                    <h2>Quick Actions</h2>
+                    <div class="quick-actions-grid-vertical">
+                         <a href="#pos" data-page="page-pos" class="action-card quick-action-link">
+                             <i class="fa-solid fa-plus" style="color: var(--info-blue);"></i>
+                             <span>New Order</span>
+                         </a>
+                         <a href="#orders" data-page="page-orders" class="action-card quick-action-link">
+                             <i class="fa-solid fa-boxes-stacked" style="color: var(--primary-purple);"></i>
+                             <span>Manage Orders</span>
+                         </a>
+                         <a href="#pos" data-page="page-pos" class="action-card quick-action-link">
+                             <i class="fa-solid fa-cash-register" style="color: var(--success-green);"></i>
+                             <span>Cash Register</span>
+                         </a>
+                    </div>
+                </div>
 
-            
-        <div id="customer-modal" class="modal">
-            </div>
-        <div id="order-details-modal" class="modal">
-            </div>
-        
+                <div class="table-graph-column">
+                    <div class="table-container">
+                        <div class="table-header">
+                            <h2>Today's Orders (18 Aug 2022)</h2>
+                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Invoice</th>
+                                    <th>Customer Name</th>
+                                    <th>Delivery Date</th>
+                                    <th>Qty</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orders-table-body">
+                                 <tr>
+                                     <td>INV-001</td>
+                                     <td>Sarthak Kumar</td>
+                                     <td>10 Apr</td>
+                                     <td>5</td>
+                                     <td><span class="status-badge ready active">READY</span></td>
+                                 </tr>
+                                 <tr>
+                                     <td>INV-002</td>
+                                     <td>Neha Singh</td>
+                                     <td>11 Apr</td>
+                                     <td>3</td>
+                                     <td><span class="status-badge pending">PENDING</span></td>
+                                 </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="chart-container">
+                        <h2>Weekly Order Trends</h2>
+                        <canvas id="weeklyChart"></canvas>
+                    </div>
+                </div>
 
-            <script type="module" src="js/main.js"></script>
+            </div> <div class="mobile-only-quick-actions" style="display: none;">
+                 <h2>Quick Actions</h2>
+                 <div class="quick-actions-grid">
+                     <a href="#pos" data-page="page-pos" class="action-card quick-action-link"><i class="fa-solid fa-shirt" style="color: var(--info-blue);"></i><span>New Order</span></a>
+                     <a href="#orders" data-page="page-orders" class="action-card quick-action-link"><i class="fa-solid fa-boxes-stacked" style="color: var(--primary-purple);"></i><span>Manage Orders</span></a>
+                     <a href="#customers" data-page="page-customers" class="action-card quick-action-link"><i class="fa-solid fa-receipt" style="color: var(--warning-yellow);"></i><span>Customers</span></a>
+                     <a href="#" class="action-card"><i class="fa-solid fa-calendar-check" style="color: var(--success-green);"></i><span>Schedule Pickup</span></a>
+                 </div>
+            </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-    <script>eruda.init();</script>
+        </main>
+        <! =============== Dasboard Ending ==================== !>
 
+        <! ================ PAGE 2: Pos Start ===================== !>
+        <main class="content-area page-content" id="page-pos" style="display:none;">
+    
+    <div class="pos-layout">
+
+        <section class="pos-products">
+            
+            <div class="product-filters" id="product-filters">
+                <button class="filter-btn active" data-category="all">All</button>
+                </div>
+            
+            <div class="product-grid" id="product-grid">
+                <p>Loading products...</p>
+            </div>
+        </section>
+
+
+        <aside class="pos-cart">
+            <div class="cart-container">
+                
+                <div class="cart-header">Order Cart</div>
+                
+                <div class="customer-details">
+                    <input type="tel" id="customer-phone" placeholder="Customer Phone*">
+                    <input type="text" id="customer-name" placeholder="Customer Name">
+                </div>
+                
+                <form class="custom-item-form" id="custom-item-form">
+                    <h3>Add Custom/Weight Item</h3>
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 2;">
+                            <label for="custom-item-name">Item Name</label>
+                            <input type="text" id="custom-item-name" placeholder="e.g., Wash & Fold">
+                        </div>
+                        <div class="form-group small">
+                            <label for="custom-item-qty">Qty/Kg</label>
+                            <input type="number" id="custom-item-qty" value="1" step="0.1">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="custom-item-price">Price (per unit/kg)</label>
+                            <input type="number" id="custom-item-price" placeholder="e.g., 70">
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="align-self: flex-end;">Add</button>
+                    </div>
+                </form>
+                
+                <div class="cart-items-list" id="cart-items-list">
+                    <div class="cart-empty-msg">Cart is empty</div>
+                </div>
+                
+                <div class="cart-summary">
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <strong id="summary-subtotal">$0.00</strong>
+                    </div>
+                    <div class="summary-row">
+                        <span>Discount</span>
+                        <strong id="summary-discount">$0.00</strong>
+                    </div>
+                    
+                    <div class="summary-row" style="align-items: center; padding: 10px 15px; background: var(--warning-yellow-light);">
+                        <label for="is-express-order" style="font-weight: 600; color: var(--text-dark);">Express Order (Urgent)?</label>
+                        <input type="checkbox" id="is-express-order" style="width: 20px; height: 20px; accent-color: var(--primary-orange);">
+                    </div>
+                    
+                    <div class="summary-row total">
+                        <span>Total</span>
+                        <strong id="summary-total">$0.00</strong>
+                    </div>
+                </div>
+                
+                <button class="charge-btn" id="place-order-btn">
+                    Charge & Place Order
+                </button>
+            </div>
+        </aside>
+        
+    </div>
+</main>
+        <! =================== Pos Ending =================== !>
+
+        <! ================Order Start ==================== !>
+        <main class="content-area page-content" id="page-orders" style="display:none;">
+
+    <h1 class="page-header">Manage Orders</h1>
+    <div class="page-actions">
+
+        <div class="search-box">
+            <i class="fa-solid fa-search"></i>
+            <input type="text" id="order-search" placeholder="Search by Invoice, Name, or Phone...">
+        </div>
+
+        <a href="#pos" data-page="page-pos" class="btn btn-primary quick-action-link">
+            <i class="fa-solid fa-plus"></i>
+            <span>New Order</span>
+        </a>
+
+    </div>
+    <div class="table-container">
+        <table class="data-table">
+
+            <thead>
+                <tr>
+                    <th>Invoice ID</th>
+                    <th>Customer</th>
+                    <th>Date</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody id="orders-list-body">
+                <tr>
+                    <td colspan="6" style="text-align: center;">Loading orders...</td>
+                </tr>
+            </tbody>
+
+        </table>
+    </div>
+    </main>
+    <! ============ Order Ending ======================= !>
+    
+<! ============ Schedule Start ======================= !>
+    <main class="content-area page-content" id="page-schedule" style="display:none;">
+    
+    <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <span>Pickup & Delivery Schedule</span>
+        <button class="btn btn-primary" id="add-schedule-event-btn">
+            <i class="fa-solid fa-plus"></i>
+            <span>Add New Entry</span>
+        </button>
+    </div>
+
+    <div class="page-actions" style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; justify-content: space-between; flex-wrap: wrap;">
+        <h3 style="margin-bottom: 1rem; width: 100%; color: var(--text-dark);">Optimize Rider's Route (Today)</h3>
+        
+        <div class="form-group" style="flex-grow: 1; margin-bottom: 0;">
+            <label for="route-rider-select">Select Rider</label>
+            <select id="route-rider-select" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.9rem; background: var(--card-bg);">
+                <option value="">-- Select Rider --</option>
+                </select>
+        </div>
+        
+        <button class="btn btn-primary" id="optimize-route-btn" style="align-self: flex-end;">
+            <i class="fa-solid fa-route"></i>
+            <span>Show Best Route</span>
+        </button>
+    </div>
+    <div class="table-container" style="padding: 1.5rem; background: var(--card-bg);">
+        <div id="schedule-calendar"></div>
+    </div>
+</main>
+ <! ============ Schedule End======================= !>
+    
+        <! =============== PAGE 8: Cash Register Start ==================== !>
+        <main class="content-area page-content" id="page-cash-register" style="display:none;">
+            <h1 class="page-header">Cash Register (Today's Log)</h1>
+
+            <div class="cash-summary-grid">
+                <div class="cash-summary-card">
+                    <div class="title">Opening Balance</div>
+                    <div class="amount" id="summary-opening">₹0.00</div>
+                </div>
+                <div class="cash-summary-card">
+                    <div class="title">Total Cash In</div>
+                    <div class="amount positive" id="summary-cash-in">₹0.00</div>
+                </div>
+                <div class="cash-summary-card">
+                    <div class="title">Total Cash Out</div>
+                    <div class="amount negative" id="summary-cash-out">₹0.00</div>
+                </div>
+                <div class="cash-summary-card">
+                    <div class="title">Expected in Drawer</div>
+                    <div class="amount" id="summary-closing">₹0.00</div>
+                </div>
+            </div>
+
+            <div class="page-actions" style="justify-content: flex-end;">
+                <button class="btn btn-secondary" id="set-opening-balance-btn">
+                    <i class="fa-solid fa-store"></i>
+                    <span>Set Opening Balance</span>
+                </button>
+                <button class="btn btn-primary" style="background-color: var(--success-green); border-color: var(--success-green);" id="add-cash-in-btn">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Add Cash In</span>
+                </button>
+                <button class="btn btn-primary" id="add-cash-out-btn">
+                    <i class="fa-solid fa-minus"></i>
+                    <span>Add Cash Out (Expense)</span>
+                </button>
+            </div>
+
+            <div class="table-container">
+                 <div class="table-header">
+                    <h2>Today's Transactions</h2>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cash-log-body">
+                         </tbody>
+                </table>
+            </div>
+
+        </main>
+        <! ============== Cash Register End ================== !>
+
+        <! ============== PAGE 4: Coustomer Start ===================== !>
+        <main class="content-area page-content" id="page-customers" style="display:none;">
+            <h1 class="page-header">Customer Management</h1>
+            <div class="page-actions">
+                <div class="search-box">
+                    <i class="fa-solid fa-search"></i>
+                    <input type="text" id="customer-search" placeholder="Search by Name or Phone...">
+                </div>
+                <button class="btn btn-primary" id="add-customer-btn">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>New Customer</span>
+                </button>
+            </div>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Total Orders</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customers-list-body">
+                        <tr>
+                            <td colspan="4" style="text-align: center;">Loading customers...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+        <! ============= Coustomer End ==================== !>
+
+        <! =============== PAGE 5: Report Start ==================== !>
+        <main class="content-area page-content" id="page-reports" style="display:none;">
+            <h1 class="page-header">Reports</h1>
+            <p style="color: var(--text-light);">This feature is coming soon.</p>
+        </main>
+        <! ============== Report End ================== !>
+
+        <! =============== PAGE 6: Inventory Start ==================== !>
+        <main class="content-area page-content" id="page-inventory" style="display:none;">
+            <h1 class="page-header">Inventory</h1>
+            <p style="color: var(--text-light);">This feature is coming soon.</p>
+        </main>
+        <! ============== Inventory End ================== !>
+
+   <! =============== Staff Start ==================== !>      
+       <main class="content-area page-content" id="page-staff" style="display:none;">
+            <h1 class="page-header">Manage Staff (Riders)</h1>
+
+            <div class="page-actions" style="justify-content: flex-end;">
+                <button class="btn btn-primary" id="add-staff-btn">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Add New Rider</span>
+                </button>
+            </div>
+
+            <div class="table-container">
+                 <div class="table-header">
+                    <h2>Current Riders</h2>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Rider Name</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="staff-list-body">
+                         </tbody>
+                </table>
+            </div>
+
+        </main>
+   <! =============== Staff End ==================== !>      
+        
+        <! =============== Settings Start ==================== !>
+        <main class="content-area page-content" id="page-settings" style="display:none;">
+            <h1 class="page-header">Settings</h1>
+            <p style="color: var(--text-light);">This feature is coming soon.</p>
+        </main>
+        <! ============== Settings End ================== !>
+
+<! =========================================== !>
+<! ============== Modal Start ================== !>
+<! ========================================= !>
+    
+    <! ============== Coustomer Model Start ================== !>
+        
+        <div id="customer-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modal-title">Add New Customer</h2>
+                    <span class="close-btn" id="modal-close-btn">×</span>
+                </div>
+                <form id="customer-form">
+                    <input type="hidden" id="customer-id">
+                    <div class="form-group">
+                        <label for="form-customer-name">Name*</label>
+                        <input type="text" id="form-customer-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="form-customer-phone">Phone*</label>
+                        <input type="text" id="form-customer-phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="form-customer-address">Address</label>
+                        <input type="text" id="form-customer-address">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Save Customer</button>
+                </form>
+            </div>
+        </div>
+<! ============== Coustomer Model End ================== !>
+    
+<! ============== Dasboard Model Start ================== !>
+    <nav class="bottom-nav">
+        <a href="#dashboard" class="nav-item active" data-page="page-dashboard">
+            <i class="fa-solid fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="#orders" class="nav-item" data-page="page-orders">
+            <i class="fa-solid fa-box-archive"></i>
+            <span>Orders</span>
+        </a>
+        
+        <a href="#pos" class="fab-new-order" data-page="page-pos">
+            <i class="fa-solid fa-plus"></i>
+        </a>
+        
+        <a href="#customers" class="nav-item" data-page="page-customers">
+            <i class="fa-solid fa-users"></i>
+            <span>Customers</span>
+        </a>
+        <a href="#settings" class="nav-item" data-page="page-settings">
+            <i class="fa-solid fa-cogs"></i>
+            <span>Settings</span>
+        </a>
+    </nav>   
+<! ============== Dasboard Model End ================== !>
+
+<! ============== Cash Ragister Opening Blance Model Start ================== !>
+     <div id="opening-balance-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Set Opening Balance</h2>
+                <span class="close-btn" data-modal="opening-balance-modal">×</span>
+            </div>
+            <form id="opening-balance-form">
+                <div class="form-group">
+                    <label for="form-opening-amount">Amount in Drawer*</label>
+                    <input type="number" id="form-opening-amount" step="0.01" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Set Balance</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="cash-in-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Cash In</h2>
+                <span class="close-btn" data-modal="cash-in-modal">×</span>
+            </div>
+            <form id="cash-in-form">
+                <div class="form-group">
+                    <label for="form-cash-in-amount">Amount Received*</label>
+                    <input type="number" id="form-cash-in-amount" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="form-cash-in-notes">Notes</label>
+                    <input type="text" id="form-cash-in-notes" placeholder="e.g., Order INV-002 Payment">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Add Cash</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="cash-out-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Cash Out (Expense)</h2>
+                <span class="close-btn" data-modal="cash-out-modal">×</span>
+            </div>
+            <form id="cash-out-form">
+                <div class="form-group">
+                    <label for="form-cash-out-amount">Amount Spent*</label>
+                    <input type="number" id="form-cash-out-amount" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="form-cash-out-notes">Notes</label>
+                    <input type="text" id="form-cash-out-notes" placeholder="e.g., Bought detergent">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; background-color: var(--primary-red); border-color: var(--primary-red);">Save Expense</button>
+            </form>
+        </div>
+    </div>
+
+<! ============== Cash Ragister Opening Blance Model End ================== !>
+    
+<! ============== Order Model Start ================== !>
+     <div id="order-details-modal" class="modal">
+        <div class="modal-content modal-lg">
+            
+            <div class="modal-header">
+                <h2>Order Details</h2>
+                <div>
+                    <button class="btn btn-secondary" id="print-order-tag-btn" style="margin-right: 20px;">
+                        <i class="fa-solid fa-print"></i> Print Tag
+                    </button>
+                    <span class="close-btn" data-modal="order-details-modal">×</span>
+                </div>
+            </div>
+            <div id="modal-body-content" style="padding: 20px;">
+            
+                <div class="order-details-header">
+                    <h3>Invoice <span id="modal-order-id">INV-000</span></h3>
+                    <span class="status-badge" id="modal-order-status">PENDING</span>
+                </div>
+
+                <div class="order-details-layout">
+                    <div class="order-info-box">
+                        <h4>Customer Details</h4>
+                        <p><strong>Name:</strong> <span id="modal-customer-name">N/A</span></p>
+                        <p><strong>Phone:</strong> <span id="modal-customer-phone">N/A</span></p>
+                        <p><strong>Address:</strong> <span id="modal-customer-address">N/A</span></p>
+                    </div>
+                    <div class="order-info-box">
+                        <h4>Order Info</h4>
+                        <p><strong>Order Date:</strong> <span id="modal-order-date">N/A</span></p>
+                        <p><strong>Total Items:</strong> <span id="modal-order-total-items">0</span></p>
+                        <p><strong>Payment:</strong> <strong style="color: var(--primary-red);" id="modal-order-payment">UNPAID</strong></p>
+                    </div>
+                </div>
+
+                <h4>Items in this Order</h4>
+                <div class="table-container" style="border-radius: 8px; margin-bottom: 1rem;">
+                    <table class="order-items-table">
+                        <thead>
+                            <tr>
+                                <th>Item Name</th>
+                                <th>Qty</th>
+                                <th class="item-price">Price</th>
+                                <th class="item-price">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modal-items-list">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="order-details-summary">
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <strong id="modal-summary-subtotal">₹0.00</strong>
+                    </div>
+                    <div class="summary-row">
+                        <span>Discount</span>
+                        <strong id="modal-summary-discount">₹0.00</strong>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Grand Total</span>
+                        <strong id="modal-summary-total">₹0.00</strong>
+                    </div>
+                </div>
+                
+                <div class="order-status-updater">
+                    <h4>Update Order Status</h4>
+                    <div class="status-buttons" id="modal-status-buttons">
+                    </div>
+                </div>
+            </div> 
+        </div>
+    </div>
+<! ============== Order Model End ================== !>
+ 
+ <! ============== schedule Model Start ================== !>
+ 
+ <div id="schedule-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="schedule-modal-title">Add New Entry</h2>
+            <span class="close-btn" data-modal="schedule-modal">×</span>
+        </div>
+        
+        <form id="schedule-form" style="padding: 20px;">
+            <input type="hidden" id="event-id">
+            
+            <div class="form-group">
+                <label for="event-order-select">Select Order (Pickup/Delivery)</label>
+                <select id="event-order-select" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.9rem; background: var(--card-bg);" required>
+                    <option value="">-- Select an Order --</option>
+                    </select>
+            </div>
+            <input type="hidden" id="event-title">
+
+            <div class="form-group">
+                <label for="event-type">Type</label>
+                <select id="event-type" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.9rem; background: var(--card-bg);">
+                    <option value="PICKUP">Pickup</option>
+                    <option value="DELIVERY">Delivery</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="event-rider-select">Assign Rider</label>
+                <select id="event-rider-select" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.9rem; background: var(--card-bg);">
+                    <option value="">-- Unassigned --</option>
+                    </select>
+            </div>
+
+            <div class="form-group">
+                <label for="event-date">Date</label>
+                <input type="date" id="event-date" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="event-time">Time (Optional)</label>
+                <input type="time" id="event-time" placeholder="HH:MM">
+                <small style="color: var(--text-light);">Agar time khaali chhodenge toh yeh poore din ka event ban jaayega.</small>
+            </div>
+            
+            <div class="form-group" style="background: var(--main-bg); padding: 15px; border-radius: 8px;">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <label for="is-recurring" style="font-weight: 600; margin-bottom: 0;">Recurring Event?</label>
+                    <input type="checkbox" id="is-recurring" style="width: 20px; height: 20px; accent-color: var(--primary-orange);">
+                </div>
+            </div>
+
+            <div id="recurring-options" style="display: none; background: #fdfdfe; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color);">
+                <div class="form-group">
+                    <label for="recurring-frequency">Frequency</label>
+                    <select id="recurring-frequency" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.9rem; background: var(--card-bg);">
+                        <option value="WEEKLY">Weekly</option>
+                        <option value="MONTHLY">Monthly</option>
+                    </select>
+                </div>
+                <div class="form-group" id="recurring-days-wrapper">
+                    <label>Days of Week</label>
+                    <div id="recurring-days" style="display: flex; justify-content: space-around; gap: 5px;">
+                        <button type="button" class="day-btn" data-day="0">S</button>
+                        <button type="button" class="day-btn" data-day="1">M</button>
+                        <button type="button" class="day-btn" data-day="2">T</button>
+                        <button type="button" class="day-btn" data-day="3">W</button>
+                        <button type="button" class="day-btn" data-day="4">T</button>
+                        <button type="button" class="day-btn" data-day="5">F</button>
+                        <button type="button" class="day-btn" data-day="6">S</button>
+                    </div>
+                    <style>
+                        .day-btn { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-dark); cursor: pointer; }
+                        .day-btn.active { background: var(--primary-orange); color: white; border-color: var(--primary-orange); }
+                    </style>
+                </div>
+                <div class="form-group">
+                    <label for="recurring-end-date">End Date (Optional)</label>
+                    <input type="date" id="recurring-end-date">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1.5rem;">Save Entry</button>
+            
+            <button type="button" id="delete-event-btn" class="btn btn-secondary" style="width: 100%; margin-top: 10px; background-color: var(--primary-red-light); color: var(--primary-red); border: none; display: none;">
+                Delete Entry
+            </button>
+        </form>
+    </div>
+</div>
+<! ============== schedule Model End ================== !>
+
+<! ============== Staff Model Start ================== !>
+    <div id="staff-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="staff-modal-title">Add New Rider</h2>
+                <span class="close-btn" data-modal="staff-modal">×</span>
+            </div>
+            
+            <form id="staff-form" style="padding: 20px;">
+                <input type="hidden" id="staff-id">
+                
+                <div class="form-group">
+                    <label for="staff-name">Rider Name*</label>
+                    <input type="text" id="staff-name" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Save Rider</button>
+            </form>
+        </div>
+    </div>
+    
+
+    </div> 
+<! ============== Staff Model End ================== !>
+    
+<! =========================================== !>
+<! ============== Modal End ================== !>
+<! ========================================= !>
+
+  <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+<script>eruda.init();</script>
 </body>
 </html>
-
-
