@@ -8,11 +8,11 @@ console.log("START: main.js file chal rahi hai!");
 // (Yeh files aap next steps mein banayenge)
 import { loadDashboardStats, loadRecentOrders, loadWeeklyChart } from './pages/dashboard.js';
 import { initPosPage } from './pages/pos.js';
-// import { initOrdersPage } from './pages/orders.js';
-// import { initSchedulePage } from './pages/schedule.js';
-// import { initCashRegisterPage } from './pages/cash-register.js';
-// import { initCustomersPage } from './pages/customers.js';
-// import { initStaffPage } from './pages/staff.js';
+ import { initOrdersPage } from './pages/orders.js';
+ import { initSchedulePage } from './pages/schedule.js';
+ import { initCashRegisterPage } from './pages/cash-register.js';
+ import { initCustomersPage } from './pages/customers.js';
+ import { initStaffPage } from './pages/staff.js';
 // ... (Jab aap reports.js, settings.js banayenge, unhe yahaan import karein) ...
 
 
