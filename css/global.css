@@ -1,24 +1,25 @@
 /* ======================================= */
-/* 1. GLOBAL VARIABLES & RESET             */
+/* 1. GLOBAL VARIABLES & RESET              */
 /* ======================================= */
 :root {
     /* ब्रांड के मुख्य रंग */
     --primary-red: #F1416C;
     --primary-red-light: #FFF5F8;
-    --primary-orange: #FFA500;       /* नारंगी */
+    --primary-orange: #FFA500;        /* नारंगी */
     --primary-orange-light: #FFF3E0;
 
     /* लेआउट के रंग */
     --sidebar-bg: #ffffff;
     --main-bg: #F5F8FA;
     --card-bg: #ffffff;
-    
+    
     /* टेक्स्ट के रंग */
     --text-dark: #181C32;
     --text-light: #A1A5B7;
     --border-color: #EFF2F5;
 
-    /* == नए रंग == */
+    /* == यहाँ आपकी गड़बड़ी थी == */
+    /* == यह नए रंग हैं == */
     --warning-yellow: #FFB822;
     --warning-yellow-light: #FFF9E5;
     --info-blue: #3699FF;
@@ -29,6 +30,7 @@
     --success-green-light: #E8FFF3;
     --secondary-pink: #E11A8B;
     --secondary-pink-light: #FFF5FA;
+    /* == नए रंग यहाँ खत्म होते हैं == */
 
     /* स्टेटस के रंग */
     --status-pending-bg: #F5F8FA;
@@ -45,7 +47,7 @@
 }
 
 body {
-    background-color: var(--main-bg);
-    color: var(--text-dark);
+    background-color: var(--main-bg); /* नया बैकग्राउंड */
+    color: var(--text-dark); /* नया टेक्स्ट रंग */
     display: flex;
 }
