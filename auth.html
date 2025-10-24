@@ -149,129 +149,192 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { 
-            getAuth, 
-            createUserWithEmailAndPassword, 
-            signInWithEmailAndPassword,
-            onAuthStateChanged
-        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    // --- Firebase Auth Imports ---
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { 
+        getAuth, 
+        createUserWithEmailAndPassword, 
+        signInWithEmailAndPassword,
+        onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    
+    // --- Firebase Firestore Imports --- (YEH ADD HUA HAI)
+    import { 
+        getFirestore, 
+        collection, 
+        doc, 
+        writeBatch 
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-        // --- Yahaan Apna Firebase Config Daalein ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyCxVmGqlbomo47KqXZm4S8QqfL3bXZN6pg",
-            authDomain: "drywash-7d086.firebaseapp.com",
-            projectId: "drywash-7d086",
-            storageBucket: "drywash-7d086.firebasestorage.app",
-            messagingSenderId: "850083946512",
-            appId: "1:850083946512:web:f0ae239d283abd1dffaa95",
-            measurementId: "G-TLPBTQ31KT"
-        };
-        // --- Config End ---
+    // --- Yahaan Apna Firebase Config Daalein ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyCxVmGqlbomo47KqXZm4S8QqfL3bXZN6pg",
+        authDomain: "drywash-7d086.firebaseapp.com",
+        projectId: "drywash-7d086",
+        storageBucket: "drywash-7d086.firebasestorage.app",
+        messagingSenderId: "850083946512",
+        appId: "1:850083946512:web:f0ae239d283abd1dffaa95",
+        measurementId: "G-TLPBTQ31KT"
+    };
+    // --- Config End ---
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app); // Firestore ko initialize karein (YEH ADD HUA HAI)
 
-        // --- DOM Elements ---
-        const showLoginBtn = document.getElementById('show-login');
-        const showSignupBtn = document.getElementById('show-signup');
-        const loginForm = document.getElementById('login-form');
-        const signupForm = document.getElementById('signup-form');
-        const loginBtn = document.getElementById('login-btn');
-        const signupBtn = document.getElementById('signup-btn');
-        const errorLogin = document.getElementById('error-message-login');
-        const errorSignup = document.getElementById('error-message-signup');
+    // --- DOM Elements ---
+    const showLoginBtn = document.getElementById('show-login');
+    const showSignupBtn = document.getElementById('show-signup');
+    const loginForm = document.getElementById('login-form');
+    const signupForm = document.getElementById('signup-form');
+    const loginBtn = document.getElementById('login-btn');
+    const signupBtn = document.getElementById('signup-btn');
+    const errorLogin = document.getElementById('error-message-login');
+    const errorSignup = document.getElementById('error-message-signup');
 
-        // --- Check if already logged in ---
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                // User pehle se logged in hai, dashboard par bhejdein
-                console.log("User already logged in. Redirecting...");
-                window.location.href = 'index.html'; // Yahaan apni main file ka naam daalein
-            }
-        });
-
-        // --- Toggle Forms ---
-        showLoginBtn.addEventListener('click', () => {
-            loginForm.classList.remove('hidden');
-            signupForm.classList.add('hidden');
-            showLoginBtn.classList.add('active');
-            showSignupBtn.classList.remove('active');
-        });
-
-        showSignupBtn.addEventListener('click', () => {
-            loginForm.classList.add('hidden');
-            signupForm.classList.remove('hidden');
-            showLoginBtn.classList.remove('active');
-            showSignupBtn.classList.add('active');
-        });
-
-        // --- Handle Login ---
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
+    // --- Check if already logged in (Redirect Loop Fix) ---
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // User pehle se logged in hai, dashboard par bhejdein
+            console.log("User already logged in. Redirecting...");
             
-            loginBtn.disabled = true;
-            loginBtn.textContent = 'Logging in...';
-            errorLogin.style.display = 'none';
-
-            signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    // Login successful, redirect to dashboard
-                    window.location.href = 'index.html'; // Yahaan apni main file ka naam daalein
-                })
-                .catch((error) => {
-                    errorLogin.textContent = getErrorMessage(error.code);
-                    errorLogin.style.display = 'block';
-                })
-                .finally(() => {
-                    loginBtn.disabled = false;
-                    loginBtn.textContent = 'Login';
-                });
-        });
-
-        // --- Handle Signup ---
-        signupForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('signup-email').value;
-            const password = document.getElementById('signup-password').value;
-            
-            signupBtn.disabled = true;
-            signupBtn.textContent = 'Creating Account...';
-            errorSignup.style.display = 'none';
-
-            createUserWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    // Signup successful, redirect to dashboard
-                    window.location.href = 'index.html'; // Yahaan apni main file ka naam daalein
-                })
-                .catch((error) => {
-                    errorSignup.textContent = getErrorMessage(error.code);
-                    errorSignup.style.display = 'block';
-                })
-                .finally(() => {
-                    signupBtn.disabled = false;
-                    signupBtn.textContent = 'Create Account';
-                });
-        });
-
-        function getErrorMessage(code) {
-            switch (code) {
-                case 'auth/invalid-email':
-                    return 'Please enter a valid email address.';
-                case 'auth/user-not-found':
-                case 'auth/wrong-password':
-                    return 'Incorrect email or password.';
-                case 'auth/email-already-in-use':
-                    return 'This email is already registered.';
-                case 'auth/weak-password':
-                    return 'Password should be at least 6 characters long.';
-                default:
-                    return 'An error occurred. Please try again.';
-            }
+            // Extra check to prevent loop if already on index.html
+             if (!window.location.pathname.endsWith('index.html') && window.location.pathname !== '/') {
+                 window.location.href = 'index.html'; // Yahaan apni main file ka naam daalein
+             }
+        } else {
+             console.log("User not logged in. Showing auth page.");
+             // User logged in nahi hai, isi page par rehne do
         }
-    </script>
+    });
+
+    // --- Toggle Forms ---
+    showLoginBtn.addEventListener('click', () => {
+        loginForm.classList.remove('hidden');
+        signupForm.classList.add('hidden');
+        showLoginBtn.classList.add('active');
+        showSignupBtn.classList.remove('active');
+    });
+
+    showSignupBtn.addEventListener('click', () => {
+        loginForm.classList.add('hidden');
+        signupForm.classList.remove('hidden');
+        showLoginBtn.classList.remove('active');
+        showSignupBtn.classList.add('active');
+    });
+
+    // --- Handle Login ---
+    loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+        
+        loginBtn.disabled = true;
+        loginBtn.textContent = 'Logging in...';
+        errorLogin.style.display = 'none';
+
+        signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                // Login successful, onAuthStateChanged will redirect
+                console.log("Login successful, redirecting...");
+                // Explicit redirect can be removed if onAuthStateChanged handles it reliably
+                // window.location.href = 'index.html'; 
+            })
+            .catch((error) => {
+                errorLogin.textContent = getErrorMessage(error.code);
+                errorLogin.style.display = 'block';
+            })
+            .finally(() => {
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Login';
+            });
+    });
+
+    // --- Handle Signup (YEH UPDATE HUA HAI) ---
+    signupForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = document.getElementById('signup-email').value;
+        const password = document.getElementById('signup-password').value;
+        
+        signupBtn.disabled = true;
+        signupBtn.textContent = 'Creating Account...';
+        errorSignup.style.display = 'none';
+
+        createUserWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                // Signup successful!
+                const user = userCredential.user;
+                console.log("Signup successful for:", user.uid);
+
+                // ---> DEFAULT PRODUCTS ADD KAREIN <---
+                addDefaultProductsForUser(user.uid)
+                    .then(() => {
+                        console.log("Default products added. Redirecting...");
+                        // Ab onAuthStateChanged redirect karega ya aap yahaan kar sakte hain
+                        window.location.href = 'index.html'; // Yahaan apni main file ka naam daalein
+                    })
+                    .catch((productError) => {
+                        console.error("Could not add default products, but user created:", productError);
+                        // User ko error bata sakte hain, par redirect phir bhi kar dein
+                         alert("Account created, but failed to add default products. Please contact support or add products manually.");
+                         window.location.href = 'index.html'; 
+                    });
+            })
+            .catch((error) => {
+                errorSignup.textContent = getErrorMessage(error.code);
+                errorSignup.style.display = 'block';
+                // Only re-enable button if signup itself failed
+                signupBtn.disabled = false; 
+                signupBtn.textContent = 'Create Account';
+            });
+            // Don't put finally here, handle button state within promises
+    });
+
+    // ---> DEFAULT PRODUCTS ADD KARNE KA FUNCTION (YEH ADD HUA HAI) <---
+    async function addDefaultProductsForUser(userId) {
+        const defaultProducts = [
+            { name: "Shirt (Wash & Iron)", price: 50, category: "Wash & Iron", icon: "fa-shirt" },
+            { name: "Trousers (Wash & Iron)", price: 60, category: "Wash & Iron", icon: "fa-user-tie" },
+            { name: "T-Shirt (Wash & Fold)", price: 30, category: "Wash & Fold", icon: "fa-tshirt" },
+            { name: "Wash & Fold (per Kg)", price: 70, category: "By Weight", icon: "fa-weight-hanging" },
+            { name: "Dry Clean Suit", price: 250, category: "Dry Cleaning", icon: "fa-user-secret" }
+            // ... Aur products add karein ...
+        ];
+
+        try {
+            const userProductsCol = collection(db, 'users', userId, 'products');
+            const batch = writeBatch(db);
+            defaultProducts.forEach((product) => {
+                const newProductRef = doc(userProductsCol); 
+                batch.set(newProductRef, product); 
+            });
+            await batch.commit();
+            console.log("Default products added successfully for user:", userId);
+        } catch (error) {
+            console.error("Error adding default products:", error);
+            throw error; // Error ko aage bhejein taaki .catch() use pakad sake
+        }
+    }
+
+    // --- Error Message Helper ---
+    function getErrorMessage(code) {
+        switch (code) {
+            case 'auth/invalid-email':
+                return 'Please enter a valid email address.';
+            case 'auth/user-not-found':
+            case 'auth/wrong-password':
+            case 'auth/invalid-credential': // Added for newer Firebase versions
+                return 'Incorrect email or password.';
+            case 'auth/email-already-in-use':
+                return 'This email is already registered.';
+            case 'auth/weak-password':
+                return 'Password should be at least 6 characters long.';
+            default:
+                console.error("Unhandled Auth Error Code:", code); // Log unexpected errors
+                return 'An error occurred. Please try again.';
+        }
+    }
+</script>
 </body>
 
 </html>
