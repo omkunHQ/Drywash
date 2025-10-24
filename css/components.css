@@ -1,5 +1,5 @@
 /* ======================================= */
-/* 4. REUSABLE COMPONENTS                  */
+/* 4. REUSABLE COMPONENTS                */
 /* ======================================= */
 /* Page Header */
 .page-header {
@@ -10,7 +10,8 @@
 }
 .page-actions {
     display: flex;
-    justify-content: space-between;
+    /* justify-content: space-between; */ /* <-- YEH BADLA GAYA (Hata diya) */
+    gap: 12px; /* <-- YEH ADD HUA */
     align-items: center;
     margin-bottom: 1.5rem;
 }
@@ -21,6 +22,7 @@
     border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 0 10px;
+    flex-grow: 1; /* <-- YEH ADD HUA (Search bar ko poori jagah dega) */
 }
 .page-actions .search-box i { color: var(--text-light); }
 .page-actions .search-box input {
@@ -29,6 +31,7 @@
     padding: 10px;
     font-size: 0.9rem;
     background: none;
+    width: 100%; /* <-- Behtar mobile support ke liye */
 }
 
 /* Buttons */
@@ -43,6 +46,7 @@
     align-items: center;
     gap: 8px;
     text-decoration: none;
+    flex-shrink: 0; /* <-- YEH ADD HUA (Button ko sikudne se rokega) */
 }
 .btn-primary {
     background-color: var(--primary-orange);
@@ -160,4 +164,35 @@
     border-radius: 6px;
     font-size: 0.9rem;
     background: var(--card-bg);
+}
+
+/* ======================================= */
+/* 5. PAGE-SPECIFIC FIXES (Layout)       */ /* <-- YEH POORA BLOCK ADD HUA */
+/* ======================================= */
+
+/* Fix for Customer Page Table Layout */
+#page-customers .data-table {
+    table-layout: fixed; /* Columns ko barabar rakhta hai */
+}
+
+#page-customers .data-table th:nth-child(1),
+#page-customers .data-table td:nth-child(1) {
+    width: 30%; /* Name */
+}
+
+#page-customers .data-table th:nth-child(2),
+#page-customers .data-table td:nth-child(2) {
+    width: 30%; /* Phone */
+}
+
+#page-customers .data-table th:nth-child(3),
+#page-customers .data-table td:nth-child(3) {
+    width: 20%; /* Total Orders */
+    text-align: center;
+}
+
+#page-customers .data-table th:nth-child(4),
+#page-customers .data-table td:nth-child(4) {
+    width: 20%; /* Actions */
+    text-align: center;
 }
