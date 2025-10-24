@@ -39,63 +39,77 @@ export async function loadDashboardStats() {
                     where("createdAt", ">=", todayStartTimestamp),
                     where("createdAt", "<", todayEndTimestamp)
                 );
-                const todayOrdersSnapshot = await getDocs(todayOrdersQuery);
-                document.getElementById('stats-today-orders').textContent = todayOrdersSnapshot.size;
+                // Ginti ke liye getCountFromServer ka istemaal karein (getDocs se behtar)
+                const todayOrdersSnapshot = await getCountFromServer(todayOrdersQuery);
+                document.getElementById('stats-today-orders').textContent = todayOrdersSnapshot.data().count;
 
                 // --- Total Pending Orders (FILTERED) ---
                 const pendingQuery = query(ordersRef,
                     where("userId", "==", currentUserId), // <-- User filter
                     where('status', '==', 'PENDING')
                 );
-                const pendingSnapshot = await getDocs(pendingQuery);
-                document.getElementById('stats-pending').textContent = pendingSnapshot.size;
+                const pendingSnapshot = await getCountFromServer(pendingQuery);
+                document.getElementById('stats-pending').textContent = pendingSnapshot.data().count;
 
                 // --- Total Delivered Orders (FILTERED) ---
                 const deliveredQuery = query(ordersRef,
                     where("userId", "==", currentUserId), // <-- User filter
                     where('status', '==', 'DELIVERED')
                 );
-                const deliveredSnapshot = await getDocs(deliveredQuery);
-                document.getElementById('stats-delivered').textContent = deliveredSnapshot.size;
+                const deliveredSnapshot = await getCountFromServer(deliveredQuery);
+                document.getElementById('stats-delivered').textContent = deliveredSnapshot.data().count;
 
-                // --- Total Customers (Yeh shayad global hi rahega ya user-specific hoga?) ---
-                // Agar customers bhi user-specific hain toh yahaan bhi filter lagega
-                const customersRef = collection(db, "customers"); // Abhi ke liye global maan rahe hain
-                const customersCountSnapshot = await getCountFromServer(customersRef);
+                // --- Total Customers (FILTERED) ---
+                // ** YEH RAHA AAPKA FIX **
+                const customersRef = collection(db, "customers");
+                const userCustomersQuery = query(customersRef,
+                    where("userId", "==", currentUserId) // <-- Filter yahan add kiya
+                );
+                const customersCountSnapshot = await getCountFromServer(userCustomersQuery);
                 document.getElementById('stats-customers').textContent = customersCountSnapshot.data().count;
+
 
                 // --- Unpaid Orders (FILTERED) ---
                 const unpaidQuery = query(ordersRef,
                     where("userId", "==", currentUserId), // <-- User filter
                     where('paymentStatus', '==', 'UNPAID')
                 );
-                const unpaidSnapshot = await getDocs(unpaidQuery);
-                document.getElementById('stats-unpaid').textContent = unpaidSnapshot.size;
+                const unpaidSnapshot = await getCountFromServer(unpaidQuery);
+                document.getElementById('stats-unpaid').textContent = unpaidSnapshot.data().count;
 
                 // --- Total Pickup Requests (FILTERED, agar schedule mein userId hai) ---
-                // Note: Agar 'schedule' collection mein userId save nahi hai toh yeh filter kaam nahi karega
                 const scheduleRef = collection(db, "schedule");
                 const pickupQuery = query(scheduleRef,
-                    // where("userId", "==", currentUserId), // <-- Agar schedule mein userId hai toh add karein
+                    where("userId", "==", currentUserId), // <-- Maan rahe hain ki schedule mein 'userId' hai
                     where("extendedProps.type", "==", "PICKUP"),
                     where("start", ">=", todayStartTimestamp),
                     where("start", "<", todayEndTimestamp)
                 );
-                const pickupSnapshot = await getDocs(pickupQuery);
-                document.getElementById('stats-pickup').textContent = pickupSnapshot.size;
+                // Note: Agar 'schedule' collection mein 'userId' nahi hai, toh upar wali line comment kar dein
+                
+                const pickupSnapshot = await getCountFromServer(pickupQuery);
+                document.getElementById('stats-pickup').textContent = pickupSnapshot.data().count;
 
             } catch (error) {
                 console.error("Error loading dashboard stats for user:", currentUserId, error);
                 // Set UI to error state
                 document.getElementById('stats-today-orders').textContent = 'ERR';
-                // ... baaki stats ko bhi 'ERR' karein ...
+                document.getElementById('stats-pending').textContent = 'ERR';
+                document.getElementById('stats-delivered').textContent = 'ERR';
+                document.getElementById('stats-customers').textContent = 'ERR';
+                document.getElementById('stats-unpaid').textContent = 'ERR';
+                document.getElementById('stats-pickup').textContent = 'ERR';
+                // **Error note: Console check karein, shayad INDEX ki zaroorat ho**
             }
         } else {
             // User logged out state
             console.log("User logged out, clearing stats.");
             document.getElementById('stats-today-orders').textContent = '0';
             document.getElementById('stats-pending').textContent = '0';
-            // ... baaki stats ko bhi 0 karein ...
+            document.getElementById('stats-delivered').textContent = '0';
+            document.getElementById('stats-customers').textContent = '0';
+            document.getElementById('stats-unpaid').textContent = '0';
+            document.getElementById('stats-pickup').textContent = '0';
         }
     }); // <-- Wrapper end
 }
@@ -147,10 +161,10 @@ export async function loadRecentOrders() {
                 });
             } catch (error) {
                 console.error("Error loading recent orders for user:", currentUserId, error);
-                tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: red;">Error loading your orders.</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: red;">Error loading your orders. (Index Required?)</td></tr>';
             }
         } else {
-             // User logged out state
+            // User logged out state
             tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Please log in to see recent orders.</td></tr>';
         }
     }); // <-- Wrapper end
@@ -164,11 +178,11 @@ export async function loadWeeklyChart() {
     if (!ctx) return;
 
     // Clear previous chart data or show loading state
-     const existingChart = Chart.getChart(ctx);
-     if (existingChart) {
-         existingChart.destroy();
-     }
-     // Optional: Show loading message in canvas area
+    const existingChart = Chart.getChart(ctx);
+    if (existingChart) {
+        existingChart.destroy();
+    }
+    // Optional: Show loading message in canvas area
 
     // User ka intezaar karein
     onAuthStateChanged(auth, async (user) => { // <-- Wrapper add hua
@@ -196,17 +210,17 @@ export async function loadWeeklyChart() {
                         where("createdAt", ">=", dayStartTimestamp),
                         where("createdAt", "<", dayEndTimestamp)
                     );
-                    const daySnapshot = await getDocs(dayQuery);
+                    const daySnapshot = await getCountFromServer(dayQuery); // Use getCount
 
                     labels.push(dayStart.toLocaleDateString('en-US', { weekday: 'short' }));
-                    dataCounts.push(daySnapshot.size);
+                    dataCounts.push(daySnapshot.data().count); // Use .data().count
                 }
 
                 // Destroy again just in case (e.g., if user logs in/out quickly)
                 const checkExistingChart = Chart.getChart(ctx);
-                 if (checkExistingChart) {
-                     checkExistingChart.destroy();
-                 }
+                if (checkExistingChart) {
+                    checkExistingChart.destroy();
+                }
 
                 new Chart(ctx, {
                     type: 'bar',
@@ -232,21 +246,21 @@ export async function loadWeeklyChart() {
 
             } catch (error) {
                 console.error("Error loading weekly chart data for user:", currentUserId, error);
-                 const context = ctx.getContext('2d');
-                 context.clearRect(0, 0, ctx.width, ctx.height);
-                 context.fillStyle = 'red';
-                 context.textAlign = 'center';
-                 context.fillText('Error loading chart data', ctx.width / 2, ctx.height / 2);
+                const context = ctx.getContext('2d');
+                context.clearRect(0, 0, ctx.width, ctx.height);
+                context.fillStyle = 'red';
+                context.textAlign = 'center';
+                context.fillText('Error loading chart data (Index Required?)', ctx.width / 2, ctx.height / 2);
             }
         } else {
-             // User logged out state - Clear chart
-             console.log("User logged out, clearing chart.");
-             const context = ctx.getContext('2d');
-             context.clearRect(0, 0, ctx.width, ctx.height);
-             // Optional: Display a "Please log in" message
-             context.fillStyle = 'grey';
-             context.textAlign = 'center';
-             context.fillText('Log in to see your chart data', ctx.width / 2, ctx.height / 2);
+            // User logged out state - Clear chart
+            console.log("User logged out, clearing chart.");
+            const context = ctx.getContext('2d');
+            context.clearRect(0, 0, ctx.width, ctx.height);
+            // Optional: Display a "Please log in" message
+            context.fillStyle = 'grey';
+            context.textAlign = 'center';
+            context.fillText('Log in to see your chart data', ctx.width / 2, ctx.height / 2);
         }
     }); // <-- Wrapper end
 }
