@@ -4,15 +4,5 @@
       "source": "/(.*\\.css)",
       "headers": [{ "key": "Content-Type", "value": "text/css" }]
     }
-  ],
-  "routes": [
-    {
-      "src": "/(.*\\.(css|js|ico|png|jpg|svg))$",
-      "dest": "/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
   ]
 }
