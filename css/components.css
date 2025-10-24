@@ -1,165 +1,163 @@
 /* ======================================= */
-/* 4. REUSABLE COMPONENTS                  */
+/* 4. REUSABLE COMPONENTS                  */
 /* ======================================= */
 /* Page Header */
 .page-header {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    color: var(--text-dark);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--text-dark);
 }
 .page-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
 }
 .page-actions .search-box {
-    display: flex;
-    align-items: center;
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0 10px;
 }
 .page-actions .search-box i { color: var(--text-light); }
 .page-actions .search-box input {
-    border: none;
-    outline: none;
-    padding: 10px;
-    font-size: 0.9rem;
-    background: none;
+    border: none;
+    outline: none;
+    padding: 10px;
+    font-size: 0.9rem;
+    background: none;
 }
 
 /* Buttons */
 .btn {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 500;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    text-decoration: none;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
 }
 .btn-primary {
-    background-color: var(--primary-orange); /* लाल */
-    color: white;
+    background-color: var(--primary-orange);
+    color: white;
 }
 .btn-secondary {
-    background-color: var(--card-bg);
-    color: var(--text-dark);
-    border: 1px solid var(--border-color);
+    background-color: var(--card-bg);
+    color: var(--text-dark);
+    border: 1px solid var(--border-color);
 }
 
 /* Table */
 .table-container {
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    overflow-x: auto;
-    width: 100%; 
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow-x: auto;
+    width: 100%;
 }
 
-/* नया टेबल हेडर */
 .table-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
 }
 .table-header h2 {
-    font-size: 1.1rem;
-    color: var(--text-dark);
+    font-size: 1.1rem;
+    color: var(--text-dark);
 }
 .table-header i {
-    color: var(--text-light);
-    cursor: pointer;
+    color: var(--text-light);
+    cursor: pointer;
 }
 
 .data-table {
-    width: 100%;
-    border-collapse: collapse;
+    width: 100%;
+    border-collapse: collapse;
 }
 .data-table th, .data-table td {
-    padding: 12px 15px;
-    text-align: left;
-    border-bottom: 1px solid var(--border-color);
-    font-size: 0.9rem;
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.9rem;
 }
 .data-table th { color: var(--text-light); font-weight: 600; }
 .data-table td { color: var(--text-dark); }
 .data-table tr:last-child td { border-bottom: none; }
 
-/* नए स्टेटस बैज */
+/* Status Badges */
 .status-badge {
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-transform: uppercase;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
 }
 .status-badge.pending {
-    background-color: var(--status-pending-bg);
-    color: var(--status-pending-text);
+    background-color: var(--status-pending-bg);
+    color: var(--status-pending-text);
 }
-.status-badge.active { /* 'ready' को 'active' से बदल दिया */
-    background-color: var(--status-active-bg);
-    color: var(--status-active-text);
+.status-badge.active {
+    background-color: var(--status-active-bg);
+    color: var(--status-active-text);
 }
-/* आप 'processing' के लिए भी स्टाइल जोड़ सकते हैं */
 .status-badge.processing {
-    background-color: var(--info-blue-light);
-    color: var(--info-blue);
+    background-color: var(--info-blue-light);
+    color: var(--info-blue);
 }
 
 
 /* Modal */
 .modal {
-    display: none; /* Hidden by default */
-    position: fixed;
-    z-index: 1002;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.4);
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1002;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
 }
 .modal-content {
-    background-color: var(--main-bg); /* हल्का ग्रे */
-    margin: 10% auto;
-    padding: 20px;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 500px;
+    background-color: var(--main-bg);
+    margin: 10% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
 }
 .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 10px;
-    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
 }
 .modal-header h2 { font-size: 1.2rem; }
 .modal-header .close-btn { font-size: 1.5rem; cursor: pointer; color: var(--text-light); }
 .form-group { margin-bottom: 15px; }
 .form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: 500;
-    font-size: 0.9rem;
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    font-size: 0.9rem;
 }
-.form-group input, 
-.form-group select { /* Select ke liye bhi style add kiya */
-    width: 100%;
-    padding: 10px;
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    font-size: 0.9rem;
-    background: var(--card-bg);
+.form-group input,
+.form-group select { /* Select added */
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    background: var(--card-bg);
 }
