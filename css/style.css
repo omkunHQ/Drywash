@@ -1,7 +1,7 @@
 @import url('global.css'); /* <-- Ise chhod dein */
 
-/* Baaki sabko comment kar dein */
-/*
+
+
 @import url('layout.css');
 @import url('components.css');
 @import url('pages/dashboard.css');
@@ -9,4 +9,5 @@
 @import url('pages/cash-register.css');
 @import url('pages/orders.css');
 @import url('pages/schedule.css');
-*/
+
+
