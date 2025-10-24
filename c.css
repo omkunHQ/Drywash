@@ -338,10 +338,10 @@ body {
 
 /* यह नया ग्रिड है जो सभी 6 कार्ड्स को रखेगा */
 .stats-grid-new {
-    display: grid;
-    grid-template-columns: 1fr; /* मोबाइल पर 1 कॉलम */
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* <-- Ise badal dein (ab 2 column) */
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
 }
 
 /* यह नए रंगीन कार्ड का स्टाइल है */
