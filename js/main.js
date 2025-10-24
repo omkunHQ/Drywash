@@ -13,7 +13,7 @@ import { initPosPage } from './pages/pos.js';
  import { initCashRegisterPage } from './pages/cash-register.js';
  import { initCustomersPage } from './pages/customers.js';
  import { initStaffPage } from './pages/staff.js';
- //import { initProductsPage } from './pages/products.js'; 
+ import { initProductsPage } from './pages/products.js'; 
 // ... (Jab aap reports.js, settings.js banayenge, unhe yahaan import karein) ...
 
 
@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initCashRegisterPage();
     initCustomersPage();
     initStaffPage();
-    //initProductsPage();
+    initProductsPage();
     
     console.log("Modular App Initialized Successfully.");
 });
