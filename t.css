@@ -1,0 +1,938 @@
+/* ======================================= */
+/* 1. GLOBAL VARIABLES & RESET              */
+/* ======================================= */
+:root {
+    /* ब्रांड के मुख्य रंग */
+    --primary-red: #F1416C;
+    --primary-red-light: #FFF5F8;
+    --primary-orange: #FFA500;        /* नारंगी */
+    --primary-orange-light: #FFF3E0;
+
+    /* लेआउट के रंग */
+    --sidebar-bg: #ffffff;
+    --main-bg: #F5F8FA;
+    --card-bg: #ffffff;
+    
+    /* टेक्स्ट के रंग */
+    --text-dark: #181C32;
+    --text-light: #A1A5B7;
+    --border-color: #EFF2F5;
+
+    /* == यहाँ आपकी गड़बड़ी थी == */
+    /* == यह नए रंग हैं == */
+    --warning-yellow: #FFB822;
+    --warning-yellow-light: #FFF9E5;
+    --info-blue: #3699FF;
+    --info-blue-light: #E1F0FF;
+    --primary-purple: #8950FC;
+    --primary-purple-light: #F3F0FF;
+    --success-green: #50CD89;
+    --success-green-light: #E8FFF3;
+    --secondary-pink: #E11A8B;
+    --secondary-pink-light: #FFF5FA;
+    /* == नए रंग यहाँ खत्म होते हैं == */
+
+    /* स्टेटस के रंग */
+    --status-pending-bg: #F5F8FA;
+    --status-pending-text: #A1A5B7;
+    --status-active-bg: #E8FFF3;
+    --status-active-text: #50CD89;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: var(--main-bg); /* नया बैकग्राउंड */
+    color: var(--text-dark); /* नया टेक्स्ट रंग */
+    display: flex;
+}
+
+/* ======================================= */
+/* 2. LAYOUT (SIDEBAR & MAIN)              */
+/* ======================================= */
+.sidebar {
+    width: 240px;
+    background-color: var(--sidebar-bg); /* सफेद */
+    color: var(--text-light);
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    display: none; /* Mobile-first: hidden */
+    flex-direction: column;
+    z-index: 1001;
+    transition: transform 0.3s ease;
+    border-right: 1px solid var(--border-color); /* नई बॉर्डर */
+}
+.sidebar-header {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid var(--border-color); /* बॉर्डर का रंग बदला */
+}
+.sidebar-header i { font-size: 1.8rem; color: var(--primary-orange); }
+.sidebar-header h2 { font-size: 1.2rem; color: var(--text-dark); } /* डार्क टेक्स्ट */
+
+.sidebar-nav {
+    flex-grow: 1;
+    list-style: none;
+    padding: 20px 10px;
+}
+.sidebar-nav li a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    text-decoration: none;
+    color: var(--text-light); /* हल्का टेक्स्ट */
+    border-radius: 6px;
+    margin-bottom: 5px;
+    font-weight: 500;
+    border-left: 4px solid transparent; /* एक्टिव के लिए जगह */
+}
+.sidebar-nav li a:hover {
+    background-color: var(--primary-red-light);
+    color: var(--primary-orange);
+}
+.sidebar-nav li.active a {
+    background-color: var(--primary-orange-light);
+    color: var(--primary-orange);
+    font-weight: 600;
+    border-left: 4px solid var(--primary-orange);
+    padding-left: 11px; /* पैडिंग एडजस्ट */
+}
+.sidebar-nav li a i { width: 20px; text-align: center; }
+
+/* Mobile sidebar visibility */
+.sidebar.open {
+    display: flex;
+    transform: translateX(0);
+}
+
+.main-container {
+    width: 100%;
+    transition: margin-left 0.3s ease;
+}
+
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background-color: var(--card-bg); /* सफेद */
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+.header-left { display: flex; align-items: center; gap: 1rem; }
+.header-left .menu-toggle { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-dark); }
+.header-left h1 { font-size: 1.25rem; color: var(--text-dark); }
+.search-bar { display: none; }
+.header-right { display: flex; align-items: center; gap: 1.5rem; }
+.header-right i { font-size: 1.2rem; color: var(--text-light); cursor: pointer; }
+.user-avatar { width: 36px; height: 36px; border-radius: 50%; background-color: #ccc; }
+
+.content-area {
+    padding: 1.5rem;
+    padding-bottom: 90px; /* For mobile nav */
+}
+
+/* ======================================= */
+/* 3. MOBILE BOTTOM NAV                   */
+/* ======================================= */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 70px;
+    background-color: var(--card-bg);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 1000;
+}
+.nav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: var(--text-light); font-size: 0.75rem; }
+.nav-item i { font-size: 1.25rem; }
+.nav-item.active { color: var(--primary-orange); }
+.fab-new-order { background-color: var(--primary-orange); color: white; width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-top: -30px; border: 4px solid var(--main-bg); cursor: pointer; text-decoration: none; }
+
+/* ======================================= */
+/* 6. DESKTOP MEDIA QUERY (LAYOUT ONLY)    */
+/* ======================================= */
+@media (min-width: 768px) {
+    .sidebar {
+        display: flex; /* Show sidebar on desktop */
+        transform: translateX(0);
+    }
+    .main-container {
+        margin-left: 240px;
+        width: calc(100% - 240px);
+    }
+    .main-header .menu-toggle { display: none; }
+    .header-left h1 { display: block; } /* हेडर टाइटल दिखाएँ */
+    .search-bar { 
+        display: flex; 
+        align-items: center; 
+        background-color: var(--main-bg); 
+        border-radius: 8px; 
+        padding: 5px 10px; 
+        width: 300px; 
+        border: 1px solid var(--border-color);
+    }
+    .search-bar i { color: var(--text-light); }
+    .search-bar input { border: none; background: none; outline: none; padding: 5px 8px; font-size: 0.9rem; }
+    .bottom-nav { display: none; }
+    .content-area { padding: 2rem; }
+}
+
+/* ======================================= */
+/* 4. REUSABLE COMPONENTS                  */
+/* ======================================= */
+/* Page Header */
+.page-header {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--text-dark);
+}
+.page-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+.page-actions .search-box {
+    display: flex;
+    align-items: center;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0 10px;
+}
+.page-actions .search-box i { color: var(--text-light); }
+.page-actions .search-box input {
+    border: none;
+    outline: none;
+    padding: 10px;
+    font-size: 0.9rem;
+    background: none;
+}
+
+/* Buttons */
+.btn {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+}
+.btn-primary {
+    background-color: var(--primary-orange); /* लाल */
+    color: white;
+}
+.btn-secondary {
+    background-color: var(--card-bg);
+    color: var(--text-dark);
+    border: 1px solid var(--border-color);
+}
+
+/* Table */
+.table-container {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow-x: auto;
+    width: 100%; 
+}
+
+/* नया टेबल हेडर */
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+.table-header h2 {
+    font-size: 1.1rem;
+    color: var(--text-dark);
+}
+.table-header i {
+    color: var(--text-light);
+    cursor: pointer;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.data-table th, .data-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.9rem;
+}
+.data-table th { color: var(--text-light); font-weight: 600; }
+.data-table td { color: var(--text-dark); }
+.data-table tr:last-child td { border-bottom: none; }
+
+/* नए स्टेटस बैज */
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+.status-badge.pending {
+    background-color: var(--status-pending-bg);
+    color: var(--status-pending-text);
+}
+.status-badge.active { /* 'ready' को 'active' से बदल दिया */
+    background-color: var(--status-active-bg);
+    color: var(--status-active-text);
+}
+/* आप 'processing' के लिए भी स्टाइल जोड़ सकते हैं */
+.status-badge.processing {
+    background-color: var(--info-blue-light);
+    color: var(--info-blue);
+}
+
+
+/* Modal */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1002;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+.modal-content {
+    background-color: var(--main-bg); /* हल्का ग्रे */
+    margin: 10% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+}
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+.modal-header h2 { font-size: 1.2rem; }
+.modal-header .close-btn { font-size: 1.5rem; cursor: pointer; color: var(--text-light); }
+.form-group { margin-bottom: 15px; }
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+.form-group input, 
+.form-group select { /* Select ke liye bhi style add kiya */
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    background: var(--card-bg);
+}
+
+/* ======================================= */
+/* 5. PAGE-SPECIFIC: DASHBOARD             */
+/* ======================================= */
+
+/* यह नया ग्रिड है जो सभी 6 कार्ड्स को रखेगा */
+.stats-grid-new {
+    display: grid;
+    grid-template-columns: 1fr; /* <-- Galti yahaan hai (1 column) */
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* यह नए रंगीन कार्ड का स्टाइल है */
+.stat-card-new {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    background: var(--card-bg); /* सफेद */
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.01);
+}
+
+/* यह आइकन के रंगीन गोले का स्टाइल है */
+.icon-container {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+/* यह कार्ड के टेक्स्ट का स्टाइल है */
+.stat-info .stat-title {
+    color: var(--text-light); /* हल्का ग्रे टेक्स्ट */
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.stat-info .stat-number {
+    color: var(--text-dark); /* गहरा (काला) टेक्स्ट */
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+/* यह पुराने काले कार्ड्स को छिपा देगा */
+.stats-grid, .stat-card, .small-stats-grid { 
+    display: none !important; 
+}
+
+.quick-actions-grid { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 1rem; 
+}
+.action-card { 
+    background: var(--card-bg); 
+    border: 1px solid var(--border-color); 
+    border-radius: 12px; 
+    padding: 1.5rem 1rem; 
+    text-align: center; 
+    cursor: pointer; 
+    transition: box-shadow 0.2s; 
+    text-decoration: none;
+    color: var(--text-dark);
+}
+.action-card:hover { box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+.action-card i { font-size: 2rem; color: var(--primary-orange); margin-bottom: 0.75rem; }
+.action-card span { font-size: 0.9rem; font-weight: 500; }
+
+/* यह लाइन ज़रूरी है: डेस्कटॉप कंटेंट को मोबाइल पर छिपाएं */
+.desktop-content { display: none; } 
+/* यह लाइन भी ज़रूरी है: मोबाइल क्विक एक्शन को मोबाइल पर दिखाएं (JS इसे हैंडल करता है, पर यहाँ भी रख सकते हैं) */
+.mobile-only-quick-actions { display: block; } /* या इसे JS पर छोड़ दें */
+
+
+/* ======================================= */
+/* 6. DESKTOP MEDIA QUERY (DASHBOARD ONLY) */
+/* ======================================= */
+@media (min-width: 768px) {
+    /* 1. कार्ड्स को 3 कॉलम में करें */
+    #page-dashboard .stats-grid-new { /* सिर्फ डैशबोर्ड पेज पर */
+        grid-template-columns: repeat(3, 1fr); 
+    }
+
+    /* 2. मुख्य रो को फ्लेक्स बनाएं */
+    #page-dashboard .dashboard-main-row {
+        display: flex !important; /* Force display flex */
+        gap: 1.5rem; 
+        align-items: flex-start; 
+        margin-top: 1.5rem; 
+        flex-direction: column;
+    }
+
+    /* 3. बायाँ कॉलम (क्विक एक्शन) */
+    #page-dashboard .quick-actions-column {
+        width: 100%;
+        display: block !important; /* Ensure it's visible */
+    }
+
+    #page-dashboard .quick-actions-column h2 {
+         margin-bottom: 1rem; 
+         font-size: 1.1rem;
+         color: var(--text-dark);
+    }
+    #page-dashboard .quick-actions-grid-vertical {
+        display: grid;
+        gap: 1rem; 
+        grid-template-columns: repeat(3, 1fr); /* <-- YAH ADD KAREIN */
+    }
+     #page-dashboard .quick-actions-grid-vertical .action-card {
+        flex-direction: row;
+        text-align: left;
+        padding: 1rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+     #page-dashboard .quick-actions-grid-vertical .action-card i {
+        margin-bottom: 0;
+        font-size: 1.5rem; 
+        width: 30px; 
+        text-align: center;
+    }
+
+
+    /* 4. दायाँ कॉलम (टेबल + ग्राफ) */
+    #page-dashboard .table-graph-column {
+        flex: 1; /* बची हुई सारी जगह ले लो */
+        display: flex !important; /* Force display flex */
+        flex-direction: column; 
+        gap: 1.5rem; 
+        min-width: 0; 
+    }
+
+    /* 5. टेबल कंटेनर */
+     #page-dashboard .table-container {
+         width: 100%;
+         /* Styles from outside media query apply here */
+     }
+
+    /* 6. डेटा टेबल */
+     #page-dashboard .data-table {
+         width: 100%;
+         /* Styles from outside media query apply here */
+     }
+
+    /* 7. ग्राफ कंटेनर */
+    #page-dashboard .chart-container {
+        width: 100%; 
+        height: 350px; 
+        position: relative; 
+        padding: 0; 
+        margin: 0;
+        background: var(--card-bg); /* Ensure background is applied */
+         border: 1px solid var(--border-color); /* Ensure border */
+         border-radius: 12px; /* Ensure radius */
+    }
+    /* ग्राफ टाइटल */
+    #page-dashboard .chart-container h2 {
+        padding: 1.5rem 1.5rem 0 1.5rem; 
+        margin-bottom: 1rem; 
+        font-size: 1.1rem;
+        color: var(--text-dark);
+    }
+
+    /* 8. कैनवास (ग्राफ) */
+    #page-dashboard #weeklyChart {
+        display: block; 
+        width: 100% !important; 
+        max-width: 100%;
+        height: auto !important; 
+        box-sizing: border-box; 
+        padding: 0 1rem 1.5rem 1rem; 
+        margin: 0 !important; 
+    }
+
+    /* 9. डेस्कटॉप कंटेंट दिखाएं, मोबाइल छिपाएं */
+     #page-dashboard .desktop-content {
+        display: block !important; 
+    }
+     #page-dashboard .mobile-only-quick-actions {
+         display: none !important;
+     }
+}
+/* ======================================= */
+/* 5. PAGE-SPECIFIC: CASH REGISTER         */
+/* ======================================= */
+.cash-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Mobile par 2 column */
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.cash-summary-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.01);
+}
+
+.cash-summary-card .title {
+    color: var(--text-light);
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.cash-summary-card .amount {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+.cash-summary-card .amount.positive {
+    color: var(--success-green);
+}
+
+.cash-summary-card .amount.negative {
+    color: var(--primary-red);
+}
+
+/* Desktop par 4 column */
+@media (min-width: 768px) {
+    .cash-summary-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+/* ======================================= */
+/* 5. PAGE-SPECIFIC: ORDER DETAILS MODAL   */
+/* ======================================= */
+.modal-content.modal-lg {
+    max-width: 700px; /* Bada modal */
+}
+
+.order-details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+.order-details-header h3 {
+    font-size: 1.25rem;
+    color: var(--text-dark);
+}
+/* Order ID */
+.order-details-header h3 span {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-light);
+    margin-left: 8px;
+}
+
+.order-details-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+.order-info-box {
+    background: var(--main-bg);
+    border-radius: 8px;
+    padding: 1rem;
+}
+.order-info-box h4 {
+    font-size: 1rem;
+    color: var(--text-dark);
+    margin-bottom: 0.75rem;
+}
+.order-info-box p {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+}
+.order-info-box p strong {
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+.order-items-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+}
+.order-items-table th, .order-items-table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.9rem;
+}
+.order-items-table th {
+    background-color: var(--main-bg);
+    color: var(--text-light);
+}
+.order-items-table td.item-price {
+    text-align: right;
+    font-weight: 500;
+}
+
+.order-details-summary {
+    width: 50%;
+    margin-left: auto; /* Right align */
+    margin-bottom: 1.5rem;
+}
+.order-details-summary .summary-row { /* .summary-row components mein hai, yeh use override kar sakta hai */
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+.order-details-summary .summary-row.total {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    border-top: 1px solid var(--border-color);
+    padding-top: 8px;
+    margin-top: 8px;
+}
+.order-details-summary .summary-row span { color: var(--text-light); }
+.order-details-summary .summary-row strong { color: var(--text-dark); }
+
+.order-status-updater {
+    border-top: 1px solid var(--border-color);
+    padding-top: 1.5rem;
+}
+.order-status-updater h4 {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+.status-buttons {
+    display: flex;
+    gap: 10px;
+}
+.status-buttons .btn {
+    flex: 1;
+}
+
+/* ======================================= */
+/* 5. PAGE-SPECIFIC: POS                  */
+/* ======================================= */
+.pos-layout { display: flex; flex-direction: column; gap: 1.5rem; }
+.product-filters { display: flex; gap: 10px; margin-bottom: 1rem; overflow-x: auto; padding-bottom: 5px; }
+.filter-btn { background: var(--card-bg); border: 1px solid var(--border-color); padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.9rem; white-space: nowrap; }
+.filter-btn.active { background: var(--primary-orange); color: white; border-color: var(--primary-orange); }
+.product-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+.product-card { padding: 1rem; text-align: center; } /* product-card .action-card se styles lega */
+.product-card i { font-size: 2rem; color: var(--primary-orange); margin-bottom: 0.5rem; }
+.product-card .name { font-weight: 600; font-size: 0.9rem; }
+.product-card .price { font-size: 0.85rem; color: var(--text-light); }
+.pos-cart { width: 100%; }
+.cart-container { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; position: sticky; top: 85px; }
+.cart-header { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color); font-size: 1.1rem; font-weight: 600; }
+.customer-details { padding: 1.5rem; border-bottom: 1px solid var(--border-color); }
+.customer-details input { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.9rem; margin-bottom: 10px; }
+.cart-items-list { padding: 1rem 1.5rem; max-height: 300px; overflow-y: auto; }
+.cart-item { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+.cart-item-details .name { font-weight: 500; }
+.cart-item-details .price { font-size: 0.9rem; color: var(--text-light); }
+.cart-item-qty { display: flex; align-items: center; gap: 8px; }
+.cart-item-qty button { background: var(--main-bg); border: 1px solid var(--border-color); width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 1rem; }
+.cart-item-qty .qty-value { font-weight: 500; }
+.cart-item-remove { background: none; border: none; color: var(--primary-orange); font-size: 1.1rem; cursor: pointer; margin-left: 10px; }
+.cart-empty-msg { text-align: center; color: var(--text-light); padding: 2rem 0; }
+.cart-summary { padding: 1.5rem; border-top: 1px solid var(--border-color); }
+.summary-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem; }
+.summary-row span { color: var(--text-light); }
+.summary-row strong { color: var(--text-dark); }
+.summary-row.total { font-size: 1.2rem; font-weight: 600; margin-top: 10px; }
+.charge-btn { display: block; width: 100%; background: var(--primary-orange); color: white; padding: 1rem; border: none; border-radius: 0 0 11px 11px; font-size: 1.1rem; font-weight: 600; cursor: pointer; }
+
+/* Custom Item Form */
+.custom-item-form {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    background-color: #fdfdfe;
+}
+.custom-item-form h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+.form-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+.form-row .form-group {
+    flex: 1;
+    margin-bottom: 0;
+}
+.form-row .form-group.small {
+    flex: 0.5;
+}
+
+/* ======================================= */
+/* 6. DESKTOP MEDIA QUERY (POS ONLY)       */
+/* ======================================= */
+@media (min-width: 768px) {
+    .pos-layout { 
+        flex-direction: row; 
+        align-items: flex-start; 
+        gap: 1.5rem; /* Optional: Dono ke beech space dega */
+    }
+
+    /* YEH NAYA RULE ADD KAREIN */
+    .pos-products {
+        flex: 1; /* Yeh products ko bachi hui poori jagah dega */
+        min-width: 0; /* Yeh flexbox ko ajeeb tarah se shrink/overflow hone se rokta hai */
+    }
+
+    .pos-cart { 
+        width: 400px; /* <-- Yahaan apni pasand ki width rakhein (jaise 450px ya 500px) */
+        flex-shrink: 0; /* <-- YEH SABSE ZAROORI HAI: Yeh cart ko sikudne se rokega */
+    } 
+    .product-grid { 
+        grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); /* <-- minmax(130px, 1fr) ko minmax(90px, 1fr) kiya */
+        gap: 0.75rem; /* Optional: Items ke beech thoda kam space */
+    }
+}
+/* ======================================= */
+/* 5. PAGE-SPECIFIC: POS                  */
+/* ======================================= */
+.pos-layout { display: flex; flex-direction: column; gap: 1.5rem; }
+.product-filters { display: flex; gap: 10px; margin-bottom: 1rem; overflow-x: auto; padding-bottom: 5px; }
+.filter-btn { background: var(--card-bg); border: 1px solid var(--border-color); padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.9rem; white-space: nowrap; }
+.filter-btn.active { background: var(--primary-orange); color: white; border-color: var(--primary-orange); }
+.product-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+.product-card { padding: 1rem; text-align: center; } /* product-card .action-card se styles lega */
+.product-card i { font-size: 2rem; color: var(--primary-orange); margin-bottom: 0.5rem; }
+.product-card .name { font-weight: 600; font-size: 0.9rem; }
+.product-card .price { font-size: 0.85rem; color: var(--text-light); }
+.pos-cart { width: 100%; }
+.cart-container { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; position: sticky; top: 85px; }
+.cart-header { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color); font-size: 1.1rem; font-weight: 600; }
+.customer-details { padding: 1.5rem; border-bottom: 1px solid var(--border-color); }
+.customer-details input { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.9rem; margin-bottom: 10px; }
+.cart-items-list { padding: 1rem 1.5rem; max-height: 300px; overflow-y: auto; }
+.cart-item { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+.cart-item-details .name { font-weight: 500; }
+.cart-item-details .price { font-size: 0.9rem; color: var(--text-light); }
+.cart-item-qty { display: flex; align-items: center; gap: 8px; }
+.cart-item-qty button { background: var(--main-bg); border: 1px solid var(--border-color); width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 1rem; }
+.cart-item-qty .qty-value { font-weight: 500; }
+.cart-item-remove { background: none; border: none; color: var(--primary-orange); font-size: 1.1rem; cursor: pointer; margin-left: 10px; }
+.cart-empty-msg { text-align: center; color: var(--text-light); padding: 2rem 0; }
+.cart-summary { padding: 1.5rem; border-top: 1px solid var(--border-color); }
+.summary-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem; }
+.summary-row span { color: var(--text-light); }
+.summary-row strong { color: var(--text-dark); }
+.summary-row.total { font-size: 1.2rem; font-weight: 600; margin-top: 10px; }
+.charge-btn { display: block; width: 100%; background: var(--primary-orange); color: white; padding: 1rem; border: none; border-radius: 0 0 11px 11px; font-size: 1.1rem; font-weight: 600; cursor: pointer; }
+
+/* Custom Item Form */
+.custom-item-form {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    background-color: #fdfdfe;
+}
+.custom-item-form h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+.form-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+.form-row .form-group {
+    flex: 1;
+    margin-bottom: 0;
+}
+.form-row .form-group.small {
+    flex: 0.5;
+}
+
+/* ======================================= */
+/* 6. DESKTOP MEDIA QUERY (POS ONLY)       */
+/* ======================================= */
+@media (min-width: 768px) {
+    .pos-layout { 
+        flex-direction: row; 
+        align-items: flex-start; 
+        gap: 1.5rem; /* Optional: Dono ke beech space dega */
+    }
+
+    /* YEH NAYA RULE ADD KAREIN */
+    .pos-products {
+        flex: 1; /* Yeh products ko bachi hui poori jagah dega */
+        min-width: 0; /* Yeh flexbox ko ajeeb tarah se shrink/overflow hone se rokta hai */
+    }
+
+    .pos-cart { 
+        width: 400px; /* <-- Yahaan apni pasand ki width rakhein (jaise 450px ya 500px) */
+        flex-shrink: 0; /* <-- YEH SABSE ZAROORI HAI: Yeh cart ko sikudne se rokega */
+    } 
+    .product-grid { 
+        grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); /* <-- minmax(130px, 1fr) ko minmax(90px, 1fr) kiya */
+        gap: 0.75rem; /* Optional: Items ke beech thoda kam space */
+    }
+}
+/* ======================================= */
+/* 5. PAGE-SPECIFIC: SCHEDULE              */
+/* ======================================= */
+
+/* FullCalendar Customization */
+.fc-toolbar-title { font-size: 1.5rem !important; color: var(--text-dark); }
+.fc-button { 
+    background-color: var(--primary-orange) !important; 
+    border: none !important; 
+    box-shadow: none !important;
+}
+.fc-button:focus { box-shadow: none !important; }
+.fc-daygrid-day-number { color: var(--text-light); }
+.fc-day-today { background-color: var(--primary-orange-light) !important; }
+
+/* Recurring Day Buttons (from schedule-modal) */
+.day-btn { 
+    width: 36px; 
+    height: 36px; 
+    border-radius: 50%; 
+    border: 1px solid var(--border-color); 
+    background: var(--card-bg); 
+    color: var(--text-dark); 
+    cursor: pointer; 
+}
+.day-btn.active { 
+    background: var(--primary-orange); 
+    color: white; 
+    border-color: var(--primary-orange); 
+}
+
+/* ======================================= */
+/* 7. SCHEDULE PAGE MOBILE FIX              */
+/* ======================================= */
+
+/* 1. Page Header ko wrap karne dein */
+#page-schedule .page-header {
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+/* 2. 'Optimize Route' card ko vertical stack karein */
+#page-schedule .page-actions {
+    flex-direction: column;
+    align-items: stretch; /* Dropdown aur Button full-width honge */
+    gap: 1rem;
+}
+
+/* 3. Calendar ke poore header ko vertical stack karein */
+#page-schedule .fc-toolbar.fc-header-toolbar {
+    flex-direction: column; /* Prev/Next, Title, Views ko stack karein */
+    gap: 1.25rem;
+    align-items: center;
+}
+
+/* 4. Calendar ke title ('October 2025') ka size chhota karein */
+#page-schedule .fc-toolbar-title {
+    font-size: 1.25rem !important; 
+}
+
+/* 5. Calendar ke din (Mon, Tue) ke text ko chhota karein */
+#page-schedule .fc-col-header-cell-cushion {
+    font-size: 0.8rem;
+    padding: 5px;
+}
