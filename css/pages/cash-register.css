@@ -37,17 +37,31 @@
     color: var(--primary-red);
 }
 
-.page-actions {
-    display: flex;          /* Buttons ko ek line mein laata hai */
-    gap: 0.75rem;           /* Buttons ke beech mein thoda gap deta hai */
-    margin-bottom: 1.5rem;  /* Neeche table se gap deta hai */
-}
+/* ======================================= */
+/* 5. PAGE-SPECIFIC: CASH REGISTER         */
+/* (MOBILE-ONLY BUTTONS FIX)               */
+/* ======================================= */
 
-/* Yeh rule .page-actions ke andar ke sabhi buttons ko 
-   barabar chaudai (width) dega */
-.page-actions > .btn {
-    flex: 1;                /* Sabhi buttons ko barabar space lene ko kehta hai */
-    text-align: center;
+/* Yeh code sirf mobile screen par chalega */
+@media (max-width: 767px) {
+
+    .page-actions {
+        display: flex;          /* Buttons ko ek line mein laata hai */
+        gap: 0.75rem;           /* Buttons ke beech mein thoda gap deta hai */
+        margin-bottom: 1.5rem;  /* Neeche table se gap deta hai */
+    }
+
+    /* Yeh rule SIRF 'btn-primary' (Cash In/Out) ko target karega */
+    .page-actions > .btn.btn-primary {
+        flex: 1;                /* Sirf 'Cash In' aur 'Cash Out' ko stretch karega */
+        text-align: center;
+    }
+    
+    /* Yeh 'Set Opening Balance' button ko normal rakhega */
+    .page-actions > .btn.btn-secondary {
+        flex-grow: 0;
+        flex-shrink: 0;
+    }
 }
 
 /* Desktop: 4 columns */
