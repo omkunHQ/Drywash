@@ -166,7 +166,8 @@
         getFirestore, 
         collection, 
         doc, 
-        writeBatch 
+        writeBatch,
+        addDoc // <-- YEH NAYA ADD HUA HAI
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     // --- Yahaan Apna Firebase Config Daalein ---
@@ -331,40 +332,46 @@
         });
     }
 
-    // ---> DEFAULT PRODUCTS ADD KARNE KA SAHI FUNCTION <---
-    // (Is function mein koi change nahi hai, yeh pehle se sahi tha)
-    async function addDefaultProductsForUser(userId) {
-        const defaultProducts = [
-            { name: "Shirt (Wash & Iron)", price: 50, category: "Wash & Iron", icon: "fa-shirt" },
-            { name: "Trousers (Wash & Iron)", price: 60, category: "Wash & Iron", icon: "fa-user-tie" },
-            { name: "T-Shirt (Wash & Fold)", price: 30, category: "Wash & Fold", icon: "fa-tshirt" },
-            { name: "Wash & Fold (per Kg)", price: 70, category: "By Weight", icon: "fa-weight-hanging" },
-            { name: "Dry Clean Suit", price: 250, category: "Dry Cleaning", icon: "fa-user-secret" }
-            // ... Yahaan aur products add karein ...
-        ];
+    // ---> DEFAULT PRODUCTS ADD KARNE KA NAYA FUNCTION (addDoc ke saath) <---
+async function addDefaultProductsForUser(userId) {
+    const defaultProducts = [
+        { name: "Shirt (Wash & Iron)", price: 50, category: "Wash & Iron", icon: "fa-shirt" },
+        { name: "Trousers (Wash & Iron)", price: 60, category: "Wash & Iron", icon: "fa-user-tie" },
+        { name: "T-Shirt (Wash & Fold)", price: 30, category: "Wash & Fold", icon: "fa-tshirt" },
+        { name: "Wash & Fold (per Kg)", price: 70, category: "By Weight", icon: "fa-weight-hanging" },
+        { name: "Dry Clean Suit", price: 250, category: "Dry Cleaning", icon: "fa-user-secret" }
+        // ... Yahaan aur products add karein ...
+    ];
 
-        try {
-            const productsCol = collection(db, 'products'); 
-            const batch = writeBatch(db);
+    try {
+        console.log("Starting to add default products (using addDoc)...");
+        
+        // 1. Sahi Collection (Root "products")
+        const productsCol = collection(db, 'products'); 
+
+        // 2. Batch ke bajaye, FOR LOOP mein ek-ek karke add karein
+        for (const product of defaultProducts) {
             
-            defaultProducts.forEach((product) => {
-                const newProductRef = doc(productsCol); 
-                
-                const productData = { 
-                    ...product, 
-                    userId: userId // <-- YEH SABSE ZAROORI HAI
-                };
-                
-                batch.set(newProductRef, productData); 
-            });
+            // 3. Product data mein 'userId' add karein
+            const productData = { 
+                ...product, 
+                userId: userId // <-- YEH SABSE ZAROORI HAI
+            };
             
-            await batch.commit();
-            console.log("Default products added successfully for user:", userId);
-        } catch (error) {
-            console.error("Error adding default products:", error);
-            throw error; // Error ko aage bhejein
+            // 4. 'addDoc' ka istemaal karke naya document banayein
+            await addDoc(productsCol, productData); 
+            
+            console.log(`Added product: ${product.name}`); // Console mein success message
         }
+        
+        console.log("All default products added successfully for user:", userId);
+
+    } catch (error) {
+        // Agar ab error aaya, toh woh zaroor console mein dikhega
+        console.error("Error adding default products (with addDoc):", error);
+        throw error; // Error ko aage bhejein taaki UI par bhi dikhe
     }
+}
 
     // --- Error Message Helper ---
     // (Is function mein koi change nahi hai)
