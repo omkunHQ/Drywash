@@ -37,6 +37,19 @@
     color: var(--primary-red);
 }
 
+.page-actions {
+    display: flex;          /* Buttons ko ek line mein laata hai */
+    gap: 0.75rem;           /* Buttons ke beech mein thoda gap deta hai */
+    margin-bottom: 1.5rem;  /* Neeche table se gap deta hai */
+}
+
+/* Yeh rule .page-actions ke andar ke sabhi buttons ko 
+   barabar chaudai (width) dega */
+.page-actions > .btn {
+    flex: 1;                /* Sabhi buttons ko barabar space lene ko kehta hai */
+    text-align: center;
+}
+
 /* Desktop: 4 columns */
 @media (min-width: 768px) {
     .cash-summary-grid {
