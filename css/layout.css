@@ -1,81 +1,81 @@
 /* ======================================= */
-/* 2. LAYOUT (SIDEBAR & MAIN)              */
+/* 2. LAYOUT (SIDEBAR & MAIN)              */
 /* ======================================= */
 .sidebar {
-    width: 240px;
-    background-color: var(--sidebar-bg); /* सफेद */
-    color: var(--text-light);
-    height: 100vh;
-    position: fixed;
-    left: 0;
-    top: 0;
-    display: none; /* Mobile-first: hidden */
-    flex-direction: column;
-    z-index: 1001;
-    transition: transform 0.3s ease;
-    border-right: 1px solid var(--border-color); /* नई बॉर्डर */
+    width: 240px;
+    background-color: var(--sidebar-bg);
+    color: var(--text-light);
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    display: none; /* Mobile-first: hidden */
+    flex-direction: column;
+    z-index: 1001;
+    transition: transform 0.3s ease;
+    border-right: 1px solid var(--border-color);
 }
 .sidebar-header {
-    padding: 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    border-bottom: 1px solid var(--border-color); /* बॉर्डर का रंग बदला */
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid var(--border-color);
 }
 .sidebar-header i { font-size: 1.8rem; color: var(--primary-orange); }
-.sidebar-header h2 { font-size: 1.2rem; color: var(--text-dark); } /* डार्क टेक्स्ट */
+.sidebar-header h2 { font-size: 1.2rem; color: var(--text-dark); }
 
 .sidebar-nav {
-    flex-grow: 1;
-    list-style: none;
-    padding: 20px 10px;
+    flex-grow: 1;
+    list-style: none;
+    padding: 20px 10px;
 }
 .sidebar-nav li a {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 15px;
-    text-decoration: none;
-    color: var(--text-light); /* हल्का टेक्स्ट */
-    border-radius: 6px;
-    margin-bottom: 5px;
-    font-weight: 500;
-    border-left: 4px solid transparent; /* एक्टिव के लिए जगह */
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    text-decoration: none;
+    color: var(--text-light);
+    border-radius: 6px;
+    margin-bottom: 5px;
+    font-weight: 500;
+    border-left: 4px solid transparent;
 }
 .sidebar-nav li a:hover {
-    background-color: var(--primary-red-light);
-    color: var(--primary-orange);
+    background-color: var(--primary-red-light);
+    color: var(--primary-orange);
 }
 .sidebar-nav li.active a {
-    background-color: var(--primary-orange-light);
-    color: var(--primary-orange);
-    font-weight: 600;
-    border-left: 4px solid var(--primary-orange);
-    padding-left: 11px; /* पैडिंग एडजस्ट */
+    background-color: var(--primary-orange-light);
+    color: var(--primary-orange);
+    font-weight: 600;
+    border-left: 4px solid var(--primary-orange);
+    padding-left: 11px;
 }
 .sidebar-nav li a i { width: 20px; text-align: center; }
 
 /* Mobile sidebar visibility */
 .sidebar.open {
-    display: flex;
-    transform: translateX(0);
+    display: flex;
+    transform: translateX(0);
 }
 
 .main-container {
-    width: 100%;
-    transition: margin-left 0.3s ease;
+    width: 100%;
+    transition: margin-left 0.3s ease;
 }
 
 .main-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 1.5rem;
-    background-color: var(--card-bg); /* सफेद */
-    border-bottom: 1px solid var(--border-color);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background-color: var(--card-bg);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 .header-left { display: flex; align-items: center; gap: 1rem; }
 .header-left .menu-toggle { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-dark); }
@@ -86,25 +86,25 @@
 .user-avatar { width: 36px; height: 36px; border-radius: 50%; background-color: #ccc; }
 
 .content-area {
-    padding: 1.5rem;
-    padding-bottom: 90px; /* For mobile nav */
+    padding: 1.5rem;
+    padding-bottom: 90px; /* For mobile nav */
 }
 
 /* ======================================= */
-/* 3. MOBILE BOTTOM NAV                   */
+/* 3. MOBILE BOTTOM NAV                    */
 /* ======================================= */
 .bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 70px;
-    background-color: var(--card-bg);
-    border-top: 1px solid var(--border-color);
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    z-index: 1000;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 70px;
+    background-color: var(--card-bg);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 1000;
 }
 .nav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: var(--text-light); font-size: 0.75rem; }
 .nav-item i { font-size: 1.25rem; }
@@ -112,30 +112,30 @@
 .fab-new-order { background-color: var(--primary-orange); color: white; width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-top: -30px; border: 4px solid var(--main-bg); cursor: pointer; text-decoration: none; }
 
 /* ======================================= */
-/* 6. DESKTOP MEDIA QUERY (LAYOUT ONLY)    */
+/* 6. DESKTOP MEDIA QUERY (LAYOUT ONLY)    */
 /* ======================================= */
 @media (min-width: 768px) {
-    .sidebar {
-        display: flex; /* Show sidebar on desktop */
-        transform: translateX(0);
-    }
-    .main-container {
-        margin-left: 240px;
-        width: calc(100% - 240px);
-    }
-    .main-header .menu-toggle { display: none; }
-    .header-left h1 { display: block; } /* हेडर टाइटल दिखाएँ */
-    .search-bar { 
-        display: flex; 
-        align-items: center; 
-        background-color: var(--main-bg); 
-        border-radius: 8px; 
-        padding: 5px 10px; 
-        width: 300px; 
-        border: 1px solid var(--border-color);
-    }
-    .search-bar i { color: var(--text-light); }
-    .search-bar input { border: none; background: none; outline: none; padding: 5px 8px; font-size: 0.9rem; }
-    .bottom-nav { display: none; }
-    .content-area { padding: 2rem; }
+    .sidebar {
+        display: flex;
+        transform: translateX(0);
+    }
+    .main-container {
+        margin-left: 240px;
+        width: calc(100% - 240px);
+    }
+    .main-header .menu-toggle { display: none; }
+    .header-left h1 { display: block; }
+    .search-bar {
+        display: flex;
+        align-items: center;
+        background-color: var(--main-bg);
+        border-radius: 8px;
+        padding: 5px 10px;
+        width: 300px;
+        border: 1px solid var(--border-color);
+    }
+    .search-bar i { color: var(--text-light); }
+    .search-bar input { border: none; background: none; outline: none; padding: 5px 8px; font-size: 0.9rem; }
+    .bottom-nav { display: none; }
+    .content-area { padding: 2rem; }
 }
