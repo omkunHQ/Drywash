@@ -27,6 +27,8 @@
     font-size: 2rem;
     font-weight: 700;
     color: var(--text-dark);
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .cash-summary-card .amount.positive {
@@ -83,4 +85,7 @@
     .cash-summary-grid {
         grid-template-columns: repeat(4, 1fr);
     }
+  .cash-summary-card .amount {
+        font-size: 2rem;
+  }
 }
