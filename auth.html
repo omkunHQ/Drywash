@@ -156,7 +156,7 @@
         createUserWithEmailAndPassword, 
         signInWithEmailAndPassword,
         onAuthStateChanged,
-        signInWithPopup,         // <-- YEH ADD HUA HAI
+        signInWithPopup,       // <-- YEH ADD HUA HAI
         GoogleAuthProvider,    // <-- YEH ADD HUA HAI
         getAdditionalUserInfo  // <-- YEH ADD HUA HAI
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -185,6 +185,9 @@
     const auth = getAuth(app);
     const db = getFirestore(app); // Firestore ko initialize karein
 
+    // ----> STEP 1: NAYA FLAG ADD KIYA GAYA <----
+    let isProcessingAuth = false;
+
     // --- DOM Elements ---
     const showLoginBtn = document.getElementById('show-login');
     const showSignupBtn = document.getElementById('show-signup');
@@ -195,15 +198,13 @@
     const errorLogin = document.getElementById('error-message-login');
     const errorSignup = document.getElementById('error-message-signup');
     
-    // *** FIX 1: Google Sign-in Button (Aapka ID alag ho sakta hai) ***
-    const googleBtn = document.getElementById('google-signin-btn'); // <-- Apne Google Button ki ID yahan daalein
+    const googleBtn = document.getElementById('google-signin-btn'); 
 
-    // --- Check if already logged in (Redirect Loop Fix) ---
+    // ----> STEP 2: onAuthStateChanged KO UPDATE KIYA GAYA <----
     onAuthStateChanged(auth, (user) => {
-        // *** FIX 2: Redirect Logic Theek Kiya Gaya ***
-        if (user) {
-            // User pehle se logged in hai, seedha dashboard par bhejdein
-            console.log("User already logged in. Redirecting to index.html...");
+        // Sirf tabhi redirect karein jab hum login/signup process nahi kar rahe hain
+        if (user && !isProcessingAuth) {
+            console.log("User already logged in (from previous session). Redirecting...");
             window.location.href = 'index.html'; // Yahaan apni main app file (dashboard) ka naam daalein
         } else {
             console.log("User not logged in. Showing auth page.");
@@ -226,11 +227,13 @@
         showSignupBtn.classList.add('active');
     });
 
-    // --- Handle Login ---
+    // ----> STEP 3: Handle Login KO UPDATE KIYA GAYA <----
     loginForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const email = document.getElementById('login-email').value;
         const password = document.getElementById('login-password').value;
+        
+        isProcessingAuth = true; // <-- FLAG SET
         
         loginBtn.disabled = true;
         loginBtn.textContent = 'Logging in...';
@@ -238,25 +241,29 @@
 
         signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
-                // Login successful, onAuthStateChanged ab redirect karega
                 console.log("Login successful, redirecting...");
+                window.location.href = 'index.html'; // <-- MANUAL REDIRECT
             })
             .catch((error) => {
+                isProcessingAuth = false; // <-- FLAG RESET ON ERROR
                 errorLogin.textContent = getErrorMessage(error.code);
                 errorLogin.style.display = 'block';
             })
             .finally(() => {
                 loginBtn.disabled = false;
                 loginBtn.textContent = 'Login';
+                // Yahaan flag reset nahi karna, kyonki page redirect ho jaayega
             });
     });
 
-    // --- Handle Signup ---
+    // ----> STEP 3: Handle Signup KO UPDATE KIYA GAYA <----
     signupForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const email = document.getElementById('signup-email').value;
         const password = document.getElementById('signup-password').value;
         
+        isProcessingAuth = true; // <-- FLAG SET
+
         signupBtn.disabled = true;
         signupBtn.textContent = 'Creating Account...';
         errorSignup.style.display = 'none';
@@ -265,39 +272,38 @@
             .then((userCredential) => {
                 const user = userCredential.user;
                 console.log("Signup successful for:", user.uid);
-
                 // ---> DEFAULT PRODUCTS ADD KAREIN <---
                 return addDefaultProductsForUser(user.uid); // Promise ko return karein
             })
             .then(() => {
-                // Products add ho gaye, ab onAuthStateChanged redirect karega
+                // Products add ho gaye, ab manual redirect karein
                 console.log("Default products added. Redirecting...");
-                // window.location.href = 'index.html'; // onAuthStateChanged yeh kar dega
+                window.location.href = 'index.html'; // <-- MANUAL REDIRECT
             })
             .catch((error) => {
+                isProcessingAuth = false; // <-- FLAG RESET ON ERROR
+
                 // Yahan signup error ya product error, dono aa sakte hain
                 if (error.code) { // Auth error
                     errorSignup.textContent = getErrorMessage(error.code);
                 } else { // Product error
                     console.error("Could not add default products:", error);
                     errorSignup.textContent = "Account created, but failed to add products. Please contact support.";
-                    // Phir bhi redirect kar dein, taaki user phansa na rahe
-                    setTimeout(() => {
-                        window.location.href = 'index.html';
-                    }, 2000);
                 }
                 errorSignup.style.display = 'block';
             })
             .finally(() => {
-                // *** FIX 3: Finally block add kiya taaki button hamesha enable ho ***
                 signupBtn.disabled = false; 
                 signupBtn.textContent = 'Create Account';
             });
     });
 
-    // --- Handle Google Sign-in (YEH POORA FUNCTION ADD HUA HAI) ---
+    // ----> STEP 3: Handle Google Sign-in KO UPDATE KIYA GAYA <----
     if (googleBtn) {
         googleBtn.addEventListener('click', async () => {
+            
+            isProcessingAuth = true; // <-- FLAG SET
+            
             const provider = new GoogleAuthProvider();
             try {
                 const result = await signInWithPopup(auth, provider);
@@ -312,10 +318,12 @@
                     await addDefaultProductsForUser(newUserId);
                 }
                 
-                // Login successful, onAuthStateChanged ab redirect karega
+                // Login/Signup successful, ab manual redirect karein
                 console.log("Google Sign-in successful. Redirecting...");
+                window.location.href = 'index.html'; // <-- MANUAL REDIRECT
 
             } catch (error) {
+                isProcessingAuth = false; // <-- FLAG RESET ON ERROR
                 console.error("Google Sign-in failed:", error);
                 errorLogin.textContent = getErrorMessage(error.code); // Login error mein dikhayein
                 errorLogin.style.display = 'block';
@@ -324,43 +332,42 @@
     }
 
     // ---> DEFAULT PRODUCTS ADD KARNE KA SAHI FUNCTION <---
-async function addDefaultProductsForUser(userId) {
-    const defaultProducts = [
-        { name: "Shirt (Wash & Iron)", price: 50, category: "Wash & Iron", icon: "fa-shirt" },
-        { name: "Trousers (Wash & Iron)", price: 60, category: "Wash & Iron", icon: "fa-user-tie" },
-        { name: "T-Shirt (Wash & Fold)", price: 30, category: "Wash & Fold", icon: "fa-tshirt" },
-        { name: "Wash & Fold (per Kg)", price: 70, category: "By Weight", icon: "fa-weight-hanging" },
-        { name: "Dry Clean Suit", price: 250, category: "Dry Cleaning", icon: "fa-user-secret" }
-        // ... Yahaan aur products add karein ...
-        // Jaise: { name: "Blanket", price: 150, category: "Dry Cleaning", icon: "fa-blanket" }
-    ];
+    // (Is function mein koi change nahi hai, yeh pehle se sahi tha)
+    async function addDefaultProductsForUser(userId) {
+        const defaultProducts = [
+            { name: "Shirt (Wash & Iron)", price: 50, category: "Wash & Iron", icon: "fa-shirt" },
+            { name: "Trousers (Wash & Iron)", price: 60, category: "Wash & Iron", icon: "fa-user-tie" },
+            { name: "T-Shirt (Wash & Fold)", price: 30, category: "Wash & Fold", icon: "fa-tshirt" },
+            { name: "Wash & Fold (per Kg)", price: 70, category: "By Weight", icon: "fa-weight-hanging" },
+            { name: "Dry Clean Suit", price: 250, category: "Dry Cleaning", icon: "fa-user-secret" }
+            // ... Yahaan aur products add karein ...
+        ];
 
-    try {
-        // 1. Sahi Collection (Root "products")
-        const productsCol = collection(db, 'products'); 
-        const batch = writeBatch(db);
-        
-        defaultProducts.forEach((product) => {
-            const newProductRef = doc(productsCol); // Root collection mein naya doc
+        try {
+            const productsCol = collection(db, 'products'); 
+            const batch = writeBatch(db);
             
-            // 2. Product data mein 'userId' add karein
-            const productData = { 
-                ...product, 
-                userId: userId // <-- YEH SABSE ZAROORI HAI
-            };
+            defaultProducts.forEach((product) => {
+                const newProductRef = doc(productsCol); 
+                
+                const productData = { 
+                    ...product, 
+                    userId: userId // <-- YEH SABSE ZAROORI HAI
+                };
+                
+                batch.set(newProductRef, productData); 
+            });
             
-            batch.set(newProductRef, productData); // Naya data save karein
-        });
-        
-        await batch.commit();
-        console.log("Default products added successfully for user:", userId);
-    } catch (error) {
-        console.error("Error adding default products:", error);
-        throw error; // Error ko aage bhejein
+            await batch.commit();
+            console.log("Default products added successfully for user:", userId);
+        } catch (error) {
+            console.error("Error adding default products:", error);
+            throw error; // Error ko aage bhejein
+        }
     }
-}
 
     // --- Error Message Helper ---
+    // (Is function mein koi change nahi hai)
     function getErrorMessage(code) {
         switch (code) {
             case 'auth/invalid-email':
@@ -384,6 +391,5 @@ async function addDefaultProductsForUser(userId) {
 </body>
 
 </html>
-
 
 
