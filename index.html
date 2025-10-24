@@ -25,6 +25,7 @@
             <li><a href="#customers" data-page="page-customers"><i class="fa-solid fa-users"></i> Customers</a></li>
             <li><a href="#reports" data-page="page-reports"><i class="fa-solid fa-chart-bar"></i> Reports</a></li>
             <li><a href="#inventory" data-page="page-inventory"><i class="fa-solid fa-dolly"></i> Inventory</a></li>
+            <li><a href="#products" data-page="page-products"><i class="fa-solid fa-tags"></i> Products</a></li>
             <li><a href="#staff" data-page="page-staff"><i class="fa-solid fa-users-gear"></i> Staff</a></li>
             <li><a href="#settings" data-page="page-settings"><i class="fa-solid fa-cogs"></i> Settings</a></li>
             <li style="margin-top: 20px;"><a href="#" id="logout-btn" style="color: var(--primary-red);"><i class="fa-solid fa-sign-out-alt"></i> Logout</a></li>
@@ -765,6 +766,41 @@
 </div>
 <! ============== schedule Model End ================== !>
 
+<! ============= Product Start==================== !>
+<main class="content-area page-content" id="page-products" style="display:none;">
+    
+    <h1 class="page-header">Product Management</h1>
+    
+    <div class="page-actions">
+        <div class="search-box">
+            <i class="fa-solid fa-search"></i>
+            <input type="text" id="product-search" placeholder="Search by name...">
+        </div>
+        <button id="add-new-product-btn" class="btn btn-primary">
+            <i class="fa-solid fa-plus"></i> New Product
+        </button>
+    </div>
+
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Category</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="products-list-body">
+                <tr><td colspan="4" style="text-align: center;">Loading...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+</main>
+<! =============== Product End ==================== !>
+	
+
 <! ============== Staff Model Start ================== !>
     <div id="staff-modal" class="modal">
         <div class="modal-content">
@@ -787,9 +823,41 @@
     </div>
     
 
-    </div> 
-<! ============== Staff Model End ================== !>
     
+<! ============== Staff Model End ================== !>
+	
+<! ============== Product Model Start ================== !>
+    
+<div id="product-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="product-modal-title">Edit Product</h2>
+            <span id="product-modal-close-btn" class="close-btn">&times;</span>
+        </div>
+        <form id="product-form">
+            <input type="hidden" id="product-id">
+            
+            <div class="form-group">
+                <label for="form-product-name">Product Name</label>
+                <input type="text" id="form-product-name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="form-product-price">Price</label>
+                <input type="number" id="form-product-price" step="0.01" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="form-product-category">Category</label>
+                <input type="text" id="form-product-category" placeholder="e.g., Ironing">
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Save Product</button>
+        </form>
+    </div>
+</div>
+<! ============== Product Model End ================== !>
+	</div> 
 <! =========================================== !>
 <! ============== Modal End ================== !>
 <! ========================================= !>
@@ -799,7 +867,6 @@
 <script>eruda.init();</script>
 </body>
 </html>
-
 
 
 
