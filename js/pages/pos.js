@@ -4,10 +4,10 @@
 // Path ko ../ se shuru karein kyunki pos.js 'pages' folder ke andar hai
 import {
     db, collection, getDocs, addDoc, serverTimestamp
-} from '../firebase-config.js'; // <-- Path check karein (../)
+} from '../firebase-config.js'; // <-- Path should start with ../
 import {
-    auth, onAuthStateChanged // <-- onAuthStateChanged ko import karein
-} from '../firebase-config.js'; // <-- Path check karein (../)
+    auth, onAuthStateChanged // <-- Import auth and onAuthStateChanged
+} from '../firebase-config.js'; // <-- Path should start with ../
 
 // Poora POS logic is ek function mein daal dein
 export function initPosPage() {
@@ -32,7 +32,7 @@ export function initPosPage() {
     let cart = [];
     let allProducts = [];
 
-    // --- 3. INITIALIZATION & DATA LOADING (YEH FUNCTION BADLA GAYA HAI) ---
+    // --- 3. INITIALIZATION & DATA LOADING (UPDATED FUNCTION) ---
     async function loadProductsAndCategories() {
         console.log("Loading products for POS...");
         if (productGrid) productGrid.innerHTML = '<p>Loading products...</p>'; // Loading message
@@ -43,23 +43,23 @@ export function initPosPage() {
              existingFilters.forEach(btn => btn.remove());
         }
 
-        // Pehle current user ka pata lagayein
-        onAuthStateChanged(auth, async (user) => { // async yahaan add karein
+        // Get the current user
+        onAuthStateChanged(auth, async (user) => { // Added async here
             if (user) {
                 const userId = user.uid;
                 console.log("Fetching products for user:", userId);
                 try {
-                    // User ke products subcollection se data fetch karein
-                    // COLLECTION PATH BADLA HAI
+                    // Fetch data from the user's products subcollection
+                    // COLLECTION PATH IS CHANGED HERE
                     const productsCol = collection(db, 'users', userId, 'products');
                     const snapshot = await getDocs(productsCol);
 
-                    allProducts = []; // Pehle clear karein
+                    allProducts = []; // Clear previous products
                     const categories = new Set();
                     if (snapshot.empty) {
                         console.log("No products found for this user yet.");
-                        if (productGrid) productGrid.innerHTML = '<p>No products found. Add products in settings.</p>'; // Updated message
-                        renderCategories(categories); // Render empty categories if needed
+                        if (productGrid) productGrid.innerHTML = '<p>No products found. Add products in settings.</p>';
+                        renderCategories(categories); // Still render empty categories if needed
                         return; // Stop if no products
                     }
 
@@ -77,20 +77,19 @@ export function initPosPage() {
                     if (productGrid) productGrid.innerHTML = '<p style="color: red;">Error loading products.</p>';
                 }
             } else {
-                // Agar user logged in nahi hai
+                // If user is not logged in (should not happen if auth guard works)
                 console.error("User not logged in, cannot load products.");
                 if (productGrid) productGrid.innerHTML = '<p style="color: red;">Please log in to see products.</p>';
             }
-        }); // onAuthStateChanged band karein
+        }); // End of onAuthStateChanged
     }
-    // --- FUNCTION KA UPDATE YAHAN KHATM ---
+    // --- FUNCTION UPDATE ENDS HERE ---
 
 
-    // --- 4. CATEGORY & PRODUCT RENDERING --- (Koi badlav nahi)
+    // --- 4. CATEGORY & PRODUCT RENDERING --- (No changes needed here)
     function renderCategories(categories) {
         if (!productFilters) return;
-        // Pehle se maujood code...
-         categories.forEach(category => {
+        categories.forEach(category => {
             if (productFilters.querySelector(`[data-category="${category}"]`)) return;
 
             const btn = document.createElement('button');
@@ -103,14 +102,13 @@ export function initPosPage() {
 
     function renderProducts(category) {
         if (!productGrid) return;
-        // Pehle se maujood code...
-         productGrid.innerHTML = '';
+
+        productGrid.innerHTML = '';
         const filteredProducts = (category === 'all')
             ? allProducts
             : allProducts.filter(p => p.category === category);
 
         if (filteredProducts.length === 0) {
-            // Updated message if needed, or keep the original
             productGrid.innerHTML = '<p>No products found in this category.</p>';
             return;
         }
@@ -118,31 +116,39 @@ export function initPosPage() {
         filteredProducts.forEach(p => {
             const card = document.createElement('div');
             card.className = 'action-card product-card';
+            // Ensure price exists and is a number before calling toFixed
+            const priceDisplay = (typeof p.price === 'number') ? p.price.toFixed(2) : '0.00';
             card.innerHTML = `
                 <i class="fa-solid ${p.icon || 'fa-tag'}"></i>
-                <div class="name">${p.name}</div>
-                <div class="price">$${p.price ? p.price.toFixed(2) : '0.00'}</div>
+                <div class="name">${p.name || 'Unnamed Product'}</div>
+                <div class="price">$${priceDisplay}</div>
             `;
-            card.addEventListener('click', () => addToCart(p.id, p.name, p.price || 0, 1));
+            // Ensure price is a number when adding to cart
+            card.addEventListener('click', () => addToCart(p.id, p.name || 'Unnamed', typeof p.price === 'number' ? p.price : 0, 1));
             productGrid.appendChild(card);
         });
     }
 
-    // --- 5. CART LOGIC --- (Koi badlav nahi)
+    // --- 5. CART LOGIC --- (No changes needed here)
     function addToCart(id, name, price, qty) {
-        // Pehle se maujood code...
         const existingItem = cart.find(item => item.id === id);
+        // Ensure price and qty are numbers
+        const numPrice = parseFloat(price) || 0;
+        const numQty = parseFloat(qty) || 0;
+
         if (existingItem) {
-            existingItem.qty += qty;
+            existingItem.qty += numQty;
         } else {
-            cart.push({ id, name, price: parseFloat(price), qty: parseFloat(qty) });
+            // Only push if qty is valid
+            if (numQty > 0) {
+                cart.push({ id, name, price: numPrice, qty: numQty });
+            }
         }
         renderCart();
     }
 
     function updateQuantity(id, change) {
-        // Pehle se maujood code...
-         const item = cart.find(item => item.id === id);
+        const item = cart.find(item => item.id === id);
         if (!item) return;
 
         item.qty += change;
@@ -154,7 +160,7 @@ export function initPosPage() {
 
     function renderCart() {
         if (!cartItemsList) return;
-        // Pehle se maujood code...
+
         cartItemsList.innerHTML = '';
         if (cart.length === 0) {
             cartItemsList.innerHTML = '<div class="cart-empty-msg">Cart is empty</div>';
@@ -162,20 +168,23 @@ export function initPosPage() {
             cart.forEach(item => {
                 const itemEl = document.createElement('div');
                 itemEl.className = 'cart-item';
-                const itemTotal = (item.price * item.qty).toFixed(2);
+                // Ensure price and qty are numbers before calculation
+                const itemPrice = typeof item.price === 'number' ? item.price : 0;
+                const itemQty = typeof item.qty === 'number' ? item.qty : 0;
+                const itemTotal = (itemPrice * itemQty).toFixed(2);
                 const isCustom = item.id.startsWith('custom-');
 
                 itemEl.innerHTML = `
                     <div class="cart-item-details">
                         <div class="name">${item.name}</div>
-                        <div class="price">$${item.price.toFixed(2)} x ${item.qty} = <strong>$${itemTotal}</strong></div>
+                        <div class="price">$${itemPrice.toFixed(2)} x ${itemQty} = <strong>$${itemTotal}</strong></div>
                     </div>
                     <div class="cart-item-qty">
                         ${!isCustom ?
                         `<button class="qty-change" data-id="${item.id}" data-change="-1">-</button>
-                         <span class="qty-value">${item.qty}</span>
+                         <span class="qty-value">${itemQty}</span>
                          <button class="qty-change" data-id="${item.id}" data-change="1">+</button>` :
-                         `<span class="qty-value">${item.qty} ${item.name.toLowerCase().includes('kg') ? 'kg' : 'unit'}</span>`}
+                         `<span class="qty-value">${itemQty} ${item.name.toLowerCase().includes('kg') ? 'kg' : 'unit'}</span>`}
                     </div>
                     <button class="cart-item-remove" data-id="${item.id}">
                         <i class="fa-solid fa-trash-can"></i>
@@ -188,8 +197,12 @@ export function initPosPage() {
     }
 
     function updateTotals() {
-        // Pehle se maujood code...
-        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+        const subtotal = cart.reduce((sum, item) => {
+            // Ensure price and qty are numbers
+            const itemPrice = typeof item.price === 'number' ? item.price : 0;
+            const itemQty = typeof item.qty === 'number' ? item.qty : 0;
+            return sum + (itemPrice * itemQty);
+        }, 0);
         const discount = 0; // Placeholder
         const total = subtotal - discount;
 
@@ -197,10 +210,9 @@ export function initPosPage() {
         if (totalEl) totalEl.textContent = `$${total.toFixed(2)}`;
     }
 
-    // --- 6. EVENT HANDLERS --- (Koi badlav nahi)
+    // --- 6. EVENT HANDLERS --- (No changes needed here)
     if (productFilters) {
-        // Pehle se maujood code...
-         productFilters.addEventListener('click', (e) => {
+        productFilters.addEventListener('click', (e) => {
             if (e.target.tagName === 'BUTTON' && e.target.classList.contains('filter-btn')) {
                  const currentActive = productFilters.querySelector('.filter-btn.active');
                  if (currentActive) currentActive.classList.remove('active');
@@ -211,8 +223,7 @@ export function initPosPage() {
     }
 
     if (cartItemsList) {
-        // Pehle se maujood code...
-         cartItemsList.addEventListener('click', (e) => {
+        cartItemsList.addEventListener('click', (e) => {
             const target = e.target.closest('button');
             if (!target) return;
 
@@ -228,8 +239,7 @@ export function initPosPage() {
     }
 
     if (customItemForm) {
-        // Pehle se maujood code...
-         customItemForm.addEventListener('submit', (e) => {
+        customItemForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const nameInput = document.getElementById('custom-item-name');
             const qtyInput = document.getElementById('custom-item-qty');
@@ -254,8 +264,7 @@ export function initPosPage() {
     }
 
     if (placeOrderBtn) {
-        // Pehle se maujood code...
-         placeOrderBtn.addEventListener('click', async () => {
+        placeOrderBtn.addEventListener('click', async () => {
             const customerPhone = customerPhoneInput ? customerPhoneInput.value : '';
             if (cart.length === 0) {
                 alert("Cart is empty!"); return;
@@ -266,12 +275,16 @@ export function initPosPage() {
                 return;
             }
 
+            // Ensure subtotal and total are numbers before saving
+            const subtotalValue = parseFloat(subtotalEl?.textContent?.replace('$', '')) || 0;
+            const totalValue = parseFloat(totalEl?.textContent?.replace('$', '')) || 0;
+
             const orderData = {
                 customerPhone: customerPhone,
                 customerName: customerNameInput ? customerNameInput.value : '',
-                items: cart,
-                subtotal: parseFloat(subtotalEl.textContent.replace('$', '')),
-                total: parseFloat(totalEl.textContent.replace('$', '')),
+                items: cart, // Ensure cart items have valid numbers
+                subtotal: subtotalValue,
+                total: totalValue,
                 status: 'PENDING',
                 paymentStatus: 'UNPAID',
                 isExpress: isExpressCheckbox ? isExpressCheckbox.checked : false,
@@ -283,7 +296,7 @@ export function initPosPage() {
             placeOrderBtn.textContent = 'Placing Order...';
 
             try {
-                // Yahaan order save karne ka collection path check karein - shayad global 'orders' hi theek hai
+                // Keep saving orders to the global 'orders' collection
                 const docRef = await addDoc(collection(db, "orders"), orderData);
                 alert(`Order Placed Successfully! Invoice ID: ${docRef.id}`);
 
@@ -304,6 +317,6 @@ export function initPosPage() {
     }
 
     // --- Init Function Call ---
-    loadProductsAndCategories(); // Yeh function call zaroori hai
+    loadProductsAndCategories(); // This will trigger loading products when the page initializes
 
-} // initPosPage band karein
+} // End of initPosPage function
