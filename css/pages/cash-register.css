@@ -39,32 +39,43 @@
 
 /* ======================================= */
 /* 5. PAGE-SPECIFIC: CASH REGISTER         */
-/* (MOBILE-ONLY BUTTONS FIX)               */
+/* (MOBILE-ONLY BUTTONS FIX - FINAL)       */
 /* ======================================= */
 
-/* Yeh code sirf mobile screen par chalega (767px se kam) */
 @media (max-width: 767px) {
 
     .page-actions {
-        display: flex;          /* Buttons ko ek line mein laata hai */
-        gap: 0.75rem;           /* Buttons ke beech mein thoda gap deta hai */
-        margin-bottom: 1.5rem;  /* Neeche table se gap deta hai */
+        display: flex;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+        
+        /* YEH SABSE ZAROORI HAI:
+           Yeh sabhi buttons ko barabar height dega.
+        */
+        align-items: stretch;
     }
 
-    /* 'white-space: nowrap;' ko yahan se hata diya gaya hai
-       taaki text wrap ho sake aur layout sahi rahe.
-    */
-
-    /* Yeh 'Cash In' aur 'Cash Out' ko barabar stretch karega */
-    .page-actions > .btn.btn-primary {
-        flex: 1;                /* Dono ko barabar space dega */
+    .page-actions > .btn {
+        /* Text ko wrap hone ki anumati (permission) dein */
+        white-space: normal; 
         text-align: center;
+        
+        /* Icon aur text ke beech thoda padding */
+        padding: 10px 8px; 
+    }
+
+    /* 'Set Opening Balance' button */
+    .page-actions > .btn.btn-secondary {
+        /* Ise 35% jagah do, aur shrink mat hone do */
+        /* Aap 35% ko 40% ya 30% karke test kar sakte hain */
+        flex-shrink: 0;
+        width: 35%; 
     }
     
-    /* Yeh 'Set Opening Balance' button ko normal rakhega */
-    .page-actions > .btn.btn-secondary {
-        flex-grow: 0;
-        flex-shrink: 0;
+    /* 'Cash In' aur 'Cash Out' buttons */
+    .page-actions > .btn.btn-primary {
+        /* Baaki bachi hui jagah ko barabar baant lo */
+        flex: 1; 
     }
 }
 /* Desktop: 4 columns */
