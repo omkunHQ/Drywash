@@ -37,10 +37,14 @@
 }
 
 .stat-info .stat-title {
-    color: var(--text-light);
+    color: var(--text-light); 
     font-size: 0.9rem;
     font-weight: 500;
     margin-bottom: 0.25rem;
+    white-space: normal; 
+    overflow-wrap: break-word; 
+    word-wrap: break-word; 
+    line-height: 1.3; 
 }
 
 .stat-info .stat-number {
