@@ -1,4 +1,4 @@
-@import url('global.css'); /* <-- Ise chhod dein */
+@import url('global.css');
 
 
 
@@ -9,5 +9,6 @@
 @import url('pages/cash-register.css');
 @import url('pages/orders.css');
 @import url('pages/schedule.css');
+
 
 
