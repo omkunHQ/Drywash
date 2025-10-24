@@ -42,24 +42,20 @@
 /* (MOBILE-ONLY BUTTONS FIX)               */
 /* ======================================= */
 
+/* Yeh code sirf mobile screen par chalega */
 @media (max-width: 767px) {
 
     .page-actions {
-        display: flex;
-        gap: 0.75rem;
-        margin-bottom: 1.5rem;
+        display: flex;          /* Buttons ko ek line mein laata hai */
+        gap: 0.75rem;           /* Buttons ke beech mein thoda gap deta hai */
+        margin-bottom: 1.5rem;  /* Neeche table se gap deta hai */
     }
-
-    /* --- YEH NAYA CODE ADD KAREIN --- */
-    /* Yeh text ko wrap hone se rokega aur 1 line mein rakhega */
     .page-actions > .btn {
         white-space: nowrap;
     }
-    /* --- NAYA CODE END --- */
-
-    /* Yeh rule 'btn-primary' (Cash In/Out) ko stretch karega */
+    /* Yeh rule SIRF 'btn-primary' (Cash In/Out) ko target karega */
     .page-actions > .btn.btn-primary {
-        flex: 1;
+        flex: 1;                /* Sirf 'Cash In' aur 'Cash Out' ko stretch karega */
         text-align: center;
     }
     
