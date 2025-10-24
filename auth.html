@@ -323,41 +323,41 @@
         });
     }
 
-    // --- DEFAULT PRODUCTS ADD KARNE KA FUNCTION (YEH FIX HO GAYA HAI) ---
-    async function addDefaultProductsForUser(userId) {
-        const defaultProducts = [
-            { name: "Shirt (Wash & Iron)", price: 50, category: "Wash & Iron", icon: "fa-shirt" },
-            { name: "Trousers (Wash & Iron)", price: 60, category: "Wash & Iron", icon: "fa-user-tie" },
-            { name: "T-Shirt (Wash & Fold)", price: 30, category: "Wash & Fold", icon: "fa-tshirt" },
-            { name: "Wash & Fold (per Kg)", price: 70, category: "By Weight", icon: "fa-weight-hanging" },
-            { name: "Dry Clean Suit", price: 250, category: "Dry Cleaning", icon: "fa-user-secret" }
-            // ... Aur products add karein ...
-        ];
+    // ---> DEFAULT PRODUCTS ADD KARNE KA SAHI FUNCTION <---
+async function addDefaultProductsForUser(userId) {
+    const defaultProducts = [
+        { name: "Shirt (Wash & Iron)", price: 50, category: "Wash & Iron", icon: "fa-shirt" },
+        { name: "Trousers (Wash & Iron)", price: 60, category: "Wash & Iron", icon: "fa-user-tie" },
+        { name: "T-Shirt (Wash & Fold)", price: 30, category: "Wash & Fold", icon: "fa-tshirt" },
+        { name: "Wash & Fold (per Kg)", price: 70, category: "By Weight", icon: "fa-weight-hanging" },
+        { name: "Dry Clean Suit", price: 250, category: "Dry Cleaning", icon: "fa-user-secret" }
+        // ... Aur products add karein ...
+    ];
 
-        try {
-            // *** FIX 4: Root 'products' collection mein save karein ***
-            const productsCol = collection(db, 'products'); // 'users' subcollection nahi
-            const batch = writeBatch(db);
+    try {
+        // 1. Sahi Collection (Root "products")
+        const productsCol = collection(db, 'products'); 
+        const batch = writeBatch(db);
+        
+        defaultProducts.forEach((product) => {
+            const newProductRef = doc(productsCol); // Root collection mein naya doc
             
-            defaultProducts.forEach((product) => {
-                const newProductRef = doc(productsCol); // Root collection mein naya doc
-                
-                // Product data mein 'userId' add karein
-                const productData = { 
-                    ...product, 
-                    userId: userId // <-- YEH SABSE ZAROORI HAI
-                };
-                
-                batch.set(newProductRef, productData); 
-            });
+            // 2. Product data mein 'userId' add karein
+            const productData = { 
+                ...product, 
+                userId: userId // <-- YEH SABSE ZAROORI HAI
+            };
             
-            await batch.commit();
-            console.log("Default products added successfully for user:", userId);
-        } catch (error) {
-            console.error("Error adding default products:", error);
-            throw error; // Error ko aage bhejein taaki .catch() use pakad sake
-        }
+            batch.set(newProductRef, productData); // Naya data save karein
+        });
+        
+        await batch.commit();
+        console.log("Default products added successfully for user:", userId);
+    } catch (error) {
+        console.error("Error adding default products:", error);
+        throw error; // Error ko aage bhejein
     }
+}
 
     // --- Error Message Helper ---
     function getErrorMessage(code) {
@@ -381,3 +381,4 @@
 </body>
 
 </html>
+
