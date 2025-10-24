@@ -155,10 +155,13 @@
         getAuth, 
         createUserWithEmailAndPassword, 
         signInWithEmailAndPassword,
-        onAuthStateChanged
+        onAuthStateChanged,
+        signInWithPopup,         // <-- YEH ADD HUA HAI
+        GoogleAuthProvider,    // <-- YEH ADD HUA HAI
+        getAdditionalUserInfo  // <-- YEH ADD HUA HAI
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     
-    // --- Firebase Firestore Imports --- (YEH ADD HUA HAI)
+    // --- Firebase Firestore Imports ---
     import { 
         getFirestore, 
         collection, 
@@ -180,7 +183,7 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const db = getFirestore(app); // Firestore ko initialize karein (YEH ADD HUA HAI)
+    const db = getFirestore(app); // Firestore ko initialize karein
 
     // --- DOM Elements ---
     const showLoginBtn = document.getElementById('show-login');
@@ -191,20 +194,20 @@
     const signupBtn = document.getElementById('signup-btn');
     const errorLogin = document.getElementById('error-message-login');
     const errorSignup = document.getElementById('error-message-signup');
+    
+    // *** FIX 1: Google Sign-in Button (Aapka ID alag ho sakta hai) ***
+    const googleBtn = document.getElementById('google-signin-btn'); // <-- Apne Google Button ki ID yahan daalein
 
     // --- Check if already logged in (Redirect Loop Fix) ---
     onAuthStateChanged(auth, (user) => {
+        // *** FIX 2: Redirect Logic Theek Kiya Gaya ***
         if (user) {
-            // User pehle se logged in hai, dashboard par bhejdein
-            console.log("User already logged in. Redirecting...");
-            
-            // Extra check to prevent loop if already on index.html
-             if (!window.location.pathname.endsWith('index.html') && window.location.pathname !== '/') {
-                 window.location.href = 'index.html'; // Yahaan apni main file ka naam daalein
-             }
+            // User pehle se logged in hai, seedha dashboard par bhejdein
+            console.log("User already logged in. Redirecting to index.html...");
+            window.location.href = 'index.html'; // Yahaan apni main app file (dashboard) ka naam daalein
         } else {
-             console.log("User not logged in. Showing auth page.");
-             // User logged in nahi hai, isi page par rehne do
+            console.log("User not logged in. Showing auth page.");
+            // User logged in nahi hai, isi page par rehne do
         }
     });
 
@@ -235,10 +238,8 @@
 
         signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
-                // Login successful, onAuthStateChanged will redirect
+                // Login successful, onAuthStateChanged ab redirect karega
                 console.log("Login successful, redirecting...");
-                // Explicit redirect can be removed if onAuthStateChanged handles it reliably
-                // window.location.href = 'index.html'; 
             })
             .catch((error) => {
                 errorLogin.textContent = getErrorMessage(error.code);
@@ -250,7 +251,7 @@
             });
     });
 
-    // --- Handle Signup (YEH UPDATE HUA HAI) ---
+    // --- Handle Signup ---
     signupForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const email = document.getElementById('signup-email').value;
@@ -262,35 +263,67 @@
 
         createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
-                // Signup successful!
                 const user = userCredential.user;
                 console.log("Signup successful for:", user.uid);
 
                 // ---> DEFAULT PRODUCTS ADD KAREIN <---
-                addDefaultProductsForUser(user.uid)
-                    .then(() => {
-                        console.log("Default products added. Redirecting...");
-                        // Ab onAuthStateChanged redirect karega ya aap yahaan kar sakte hain
-                        window.location.href = 'index.html'; // Yahaan apni main file ka naam daalein
-                    })
-                    .catch((productError) => {
-                        console.error("Could not add default products, but user created:", productError);
-                        // User ko error bata sakte hain, par redirect phir bhi kar dein
-                         alert("Account created, but failed to add default products. Please contact support or add products manually.");
-                         window.location.href = 'index.html'; 
-                    });
+                return addDefaultProductsForUser(user.uid); // Promise ko return karein
+            })
+            .then(() => {
+                // Products add ho gaye, ab onAuthStateChanged redirect karega
+                console.log("Default products added. Redirecting...");
+                // window.location.href = 'index.html'; // onAuthStateChanged yeh kar dega
             })
             .catch((error) => {
-                errorSignup.textContent = getErrorMessage(error.code);
+                // Yahan signup error ya product error, dono aa sakte hain
+                if (error.code) { // Auth error
+                    errorSignup.textContent = getErrorMessage(error.code);
+                } else { // Product error
+                    console.error("Could not add default products:", error);
+                    errorSignup.textContent = "Account created, but failed to add products. Please contact support.";
+                    // Phir bhi redirect kar dein, taaki user phansa na rahe
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                }
                 errorSignup.style.display = 'block';
-                // Only re-enable button if signup itself failed
+            })
+            .finally(() => {
+                // *** FIX 3: Finally block add kiya taaki button hamesha enable ho ***
                 signupBtn.disabled = false; 
                 signupBtn.textContent = 'Create Account';
             });
-            // Don't put finally here, handle button state within promises
     });
 
-    // ---> DEFAULT PRODUCTS ADD KARNE KA FUNCTION (YEH ADD HUA HAI) <---
+    // --- Handle Google Sign-in (YEH POORA FUNCTION ADD HUA HAI) ---
+    if (googleBtn) {
+        googleBtn.addEventListener('click', async () => {
+            const provider = new GoogleAuthProvider();
+            try {
+                const result = await signInWithPopup(auth, provider);
+                
+                // Check karein ki user NAYA hai ya nahi
+                const additionalInfo = getAdditionalUserInfo(result);
+                
+                if (additionalInfo.isNewUser) {
+                    // Agar NAYA hai, tabhi products banayein
+                    console.log("New Google user detected. Creating products...");
+                    const newUserId = result.user.uid;
+                    await addDefaultProductsForUser(newUserId);
+                }
+                
+                // Login successful, onAuthStateChanged ab redirect karega
+                console.log("Google Sign-in successful. Redirecting...");
+
+            } catch (error) {
+                console.error("Google Sign-in failed:", error);
+                errorLogin.textContent = getErrorMessage(error.code); // Login error mein dikhayein
+                errorLogin.style.display = 'block';
+            }
+        });
+    }
+
+    // --- DEFAULT PRODUCTS ADD KARNE KA FUNCTION (YEH FIX HO GAYA HAI) ---
     async function addDefaultProductsForUser(userId) {
         const defaultProducts = [
             { name: "Shirt (Wash & Iron)", price: 50, category: "Wash & Iron", icon: "fa-shirt" },
@@ -302,12 +335,22 @@
         ];
 
         try {
-            const userProductsCol = collection(db, 'users', userId, 'products');
+            // *** FIX 4: Root 'products' collection mein save karein ***
+            const productsCol = collection(db, 'products'); // 'users' subcollection nahi
             const batch = writeBatch(db);
+            
             defaultProducts.forEach((product) => {
-                const newProductRef = doc(userProductsCol); 
-                batch.set(newProductRef, product); 
+                const newProductRef = doc(productsCol); // Root collection mein naya doc
+                
+                // Product data mein 'userId' add karein
+                const productData = { 
+                    ...product, 
+                    userId: userId // <-- YEH SABSE ZAROORI HAI
+                };
+                
+                batch.set(newProductRef, productData); 
             });
+            
             await batch.commit();
             console.log("Default products added successfully for user:", userId);
         } catch (error) {
@@ -323,14 +366,14 @@
                 return 'Please enter a valid email address.';
             case 'auth/user-not-found':
             case 'auth/wrong-password':
-            case 'auth/invalid-credential': // Added for newer Firebase versions
+            case 'auth/invalid-credential':
                 return 'Incorrect email or password.';
             case 'auth/email-already-in-use':
                 return 'This email is already registered.';
             case 'auth/weak-password':
                 return 'Password should be at least 6 characters long.';
             default:
-                console.error("Unhandled Auth Error Code:", code); // Log unexpected errors
+                console.error("Unhandled Auth Error Code:", code);
                 return 'An error occurred. Please try again.';
         }
     }
