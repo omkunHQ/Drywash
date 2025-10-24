@@ -50,9 +50,7 @@
         gap: 0.75rem;           /* Buttons ke beech mein thoda gap deta hai */
         margin-bottom: 1.5rem;  /* Neeche table se gap deta hai */
     }
-    .page-actions > .btn {
-        white-space: nowrap;
-    }
+
     /* Yeh rule SIRF 'btn-primary' (Cash In/Out) ko target karega */
     .page-actions > .btn.btn-primary {
         flex: 1;                /* Sirf 'Cash In' aur 'Cash Out' ko stretch karega */
