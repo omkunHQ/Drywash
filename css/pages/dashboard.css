@@ -107,12 +107,12 @@
         gap: 1.5rem;
         align-items: flex-start;
         margin-top: 1.5rem;
-        flex-direction: row; /* Desktop: Side-by-side */
+        flex-direction: column; /* Desktop: Side-by-side */
     }
 
     /* 3. Left column (quick actions) */
     #page-dashboard .quick-actions-column {
-        width: 280px; /* Fixed width */
+        width: 100%; /* Fixed width */
         display: block !important;
         flex-shrink: 0; /* Don't shrink */
     }
@@ -125,7 +125,7 @@
     #page-dashboard .quick-actions-grid-vertical {
         display: grid;
         gap: 1rem;
-        grid-template-columns: 1fr; /* Vertical layout */
+        grid-template-columns: 1fr 1fr 1fr; /* Vertical layout */
     }
      #page-dashboard .quick-actions-grid-vertical .action-card {
         flex-direction: row;
