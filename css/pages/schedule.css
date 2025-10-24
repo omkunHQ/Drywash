@@ -1,65 +1,65 @@
 /* ======================================= */
-/* 5. PAGE-SPECIFIC: SCHEDULE              */
+/* 5. PAGE-SPECIFIC: SCHEDULE              */
 /* ======================================= */
 
 /* FullCalendar Customization */
 .fc-toolbar-title { font-size: 1.5rem !important; color: var(--text-dark); }
-.fc-button { 
-    background-color: var(--primary-orange) !important; 
-    border: none !important; 
-    box-shadow: none !important;
+.fc-button {
+    background-color: var(--primary-orange) !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 .fc-button:focus { box-shadow: none !important; }
 .fc-daygrid-day-number { color: var(--text-light); }
 .fc-day-today { background-color: var(--primary-orange-light) !important; }
 
 /* Recurring Day Buttons (from schedule-modal) */
-.day-btn { 
-    width: 36px; 
-    height: 36px; 
-    border-radius: 50%; 
-    border: 1px solid var(--border-color); 
-    background: var(--card-bg); 
-    color: var(--text-dark); 
-    cursor: pointer; 
+.day-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
+    color: var(--text-dark);
+    cursor: pointer;
 }
-.day-btn.active { 
-    background: var(--primary-orange); 
-    color: white; 
-    border-color: var(--primary-orange); 
+.day-btn.active {
+    background: var(--primary-orange);
+    color: white;
+    border-color: var(--primary-orange);
 }
 
 /* ======================================= */
-/* 7. SCHEDULE PAGE MOBILE FIX              */
+/* 7. SCHEDULE PAGE MOBILE FIX             */
 /* ======================================= */
 
-/* 1. Page Header ko wrap karne dein */
+/* 1. Wrap Page Header */
 #page-schedule .page-header {
-    flex-wrap: wrap;
-    gap: 1rem;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
-/* 2. 'Optimize Route' card ko vertical stack karein */
+/* 2. Stack 'Optimize Route' card vertically */
 #page-schedule .page-actions {
-    flex-direction: column;
-    align-items: stretch; /* Dropdown aur Button full-width honge */
-    gap: 1rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
 }
 
-/* 3. Calendar ke poore header ko vertical stack karein */
+/* 3. Stack Calendar header vertically */
 #page-schedule .fc-toolbar.fc-header-toolbar {
-    flex-direction: column; /* Prev/Next, Title, Views ko stack karein */
-    gap: 1.25rem;
-    align-items: center;
+    flex-direction: column;
+    gap: 1.25rem;
+    align-items: center;
 }
 
-/* 4. Calendar ke title ('October 2025') ka size chhota karein */
+/* 4. Shrink Calendar title */
 #page-schedule .fc-toolbar-title {
-    font-size: 1.25rem !important; 
+    font-size: 1.25rem !important;
 }
 
-/* 5. Calendar ke din (Mon, Tue) ke text ko chhota karein */
+/* 5. Shrink Calendar day text */
 #page-schedule .fc-col-header-cell-cushion {
-    font-size: 0.8rem;
-    padding: 5px;
+    font-size: 0.8rem;
+    padding: 5px;
 }
