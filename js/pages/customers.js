@@ -216,7 +216,7 @@ export function initCustomersPage() {
             if (addCustomerBtn) addCustomerBtn.disabled = false;
             if (customerSearchInput) customerSearchInput.disabled = false;
             startCustomerListener(currentUserId);
-Address
+
         } else {
             // User login nahi hai
             currentUserId = null;
